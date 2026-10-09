@@ -18,11 +18,7 @@ test('root returns a server redirect without the former landing page', async ({
 
   await page.goto('/');
   await expect(page).toHaveURL('/mozza-italia');
-  await expect(page.getByTestId('brand-intro')).toBeVisible();
-  await expect(page.getByTestId('brand-intro')).toHaveCount(0, {
-    timeout: 5000,
-  });
-  await expect(
-    page.getByRole('heading', { name: 'What would you like to explore?' }),
-  ).toBeVisible();
+  await expect(page.getByTestId('brand-intro')).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('.destination-card')).toHaveCount(3);
 });

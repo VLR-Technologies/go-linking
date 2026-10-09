@@ -1,68 +1,60 @@
-# Go-Linking final visual refinement and QA
+# Mozza Italia premium hub — implementation and QA
 
-Workspace: `C:\Users\Jai\go-linking`. Branch: `feature/go-linking-development`.
+## Result
 
-## Visual implementation
+A mobile-first customer hub with a 520px maximum column, the original unmodified logo, the restaurant's approved palette, locally served Barlow Condensed and Manrope fonts, three compact direct links, and a collapsed native copy accordion. No fullscreen intro or customer QR screens remain. The staff utility and QR-generation functions are preserved. No dependencies were added, and no commit, push or deployment was performed.
 
-- A compact restaurant composition capped at 1000px, with shorter hero spacing and balanced cards.
-- The supplied original `public/brands/mozza-italia/LOGO.png` is used unchanged. Intrinsic dimensions (3557 × 1445), object-fit contain, and responsive sizing preserve proportions. CSS multiply blending integrates the white image background into an ivory plate with an inner highlight, fine border, and layered shadow. Cached-image hydration is handled so the fallback cannot remain after a successful cached load.
-- Intro: 2.5 seconds total, soft cream/wine ambience, subtle scale reveal, then the logo plate moves to the measured hub header position using the Web Animations API. Choices reveal underneath. Skip, Escape, Tab, resize, and reduced motion are handled. It plays once per brand per tab, with optional session storage and an in-memory fallback. No animation dependency added.
-- Hub: stronger but compact serif headings, primary tagline, requested support copy, quieter background lighting, no dominant circles, and integrated footer strip.
-- Cards: matching glass-like surfaces, inner borders, layered contact shadows, moving reflection, restrained accent edges, responsive arrow controls, hover lift/tilt, and pressed feedback. Instagram has restrained warm social accents; review uses olive/gold. Hover motion is limited to capable pointer devices and disabled under reduced motion.
-- Destinations: branded back control, compact logo plate, dimensional action panel, strong direct CTA, framed copy control, and a separate warm QR presentation. Review copy invites an honest rating and does not preselect stars.
-- QR: unchanged black/white PNG pixels, four-module quiet zone, no blur, opacity change, perspective, overlays, or graphics. Only the outer frame is styled. Download remains 1024px PNG; displayed QR remains 250px.
+## Files changed
 
-## Files changed in this refinement
+Paths below are relative to this repository.
 
-- `src/app/brand-experience.css` (new presentation layer)
-- `src/app/layout.tsx`
 - `src/app/[brand]/page.tsx`
+- `src/app/[brand]/[destination]/page.tsx`
+- `src/app/brand-experience.css`
+- `src/app/globals.css` — removed obsolete hub/intro rules; retained shared staff and error-page styles
+- `src/app/layout.tsx`
+- `src/app/fonts.ts` — added local font integration
+- `src/app/fonts/barlow-condensed-bold.ttf` — added original website font
+- `src/app/fonts/manrope-regular.ttf` — added original website font
+- `src/app/fonts/manrope-semibold.ttf` — added original website font
+- `src/app/fonts/barlow-condensed-OFL.txt` — added license
+- `src/app/fonts/manrope-OFL.txt` — added license
+- `src/app/fonts/README.md` — added font provenance
 - `src/components/BrandHeader.tsx`
-- `src/components/BrandIntro.tsx`
-- `src/components/DestinationPage.tsx`
+- `src/components/BrandShell.tsx`
+- `src/components/DestinationCard.tsx`
+- `src/components/CopyLinkButton.tsx`
+- `src/components/CopyIcon.tsx` — added
+- `src/components/CopyLinks.tsx` — added
+- `src/components/Footer.tsx`
+- `src/components/BrandIntro.tsx` — removed
+- `src/components/DestinationPage.tsx` — removed
 - `src/config/brands.ts`
-- `tests/core.test.ts`
+- `playwright.config.ts` — optional installed-browser channel override
 - `tests/browser/experience.spec.ts`
+- `tests/browser/root-redirect.spec.ts`
+- `tests/browser/chef-intro.spec.ts` — removed obsolete overlay tests
 - `README.md`
 - `public/brands/mozza-italia/README.md`
 - `QA.md`
 
-The supplied `LOGO.png` was read but not modified. No packages were added. Existing routes, master utility, 404, QR generation, downloads, copy links, back navigation, and VLR footer remain.
+The user's pre-existing `package-lock.json` and `next-env.d.ts` changes remain intact. The logo, chef image, QR generation code, and staff utility route were not modified.
 
-## Exact destinations and master target
+## Validation
 
-| Asset                      | Target                                    |
-| -------------------------- | ----------------------------------------- |
-| Master, local preview only | `http://localhost:3000/mozza-italia`      |
-| Website                    | `https://www.mozzaitalia.com`             |
-| Instagram                  | `https://www.instagram.com/italia.mozza/` |
-| Google review              | `https://g.page/r/CbxmdpzE3rO4EBM/review` |
+- `npm test`: 20 passed, including independent decoding of four QR targets at 200, 250, 300 and 1024px. The first sandbox invocation blocked tsx's IPC pipe; the same command passed with local-process permissions.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed; hub and destination redirects pre-rendered.
+- `git diff --check`: passed.
+- All 16 browser cases passed across the full initial run and focused reruns of affected cases, using installed Chrome on port 3100. The final responsive run passed all five widths.
+- Requested widths: 360, 390, 430, 768 and 1280px. Verified centered columns, 78px link rows, logo proportions, all three links visible within the initial viewport, no horizontal overflow, and no customer QR displays.
+- Axe WCAG 2 A/AA and 2.1 AA checks passed for the collapsed hub, expanded copy controls and staff utility at all five widths, plus the clipboard-failure state.
+- Verified exact same-tab external navigation, all three links and original logo without JavaScript, no-JavaScript manual copying, all three server redirect Location headers, clipboard success/reset and both denied/unavailable clipboard fallback, keyboard focus/copying, reduced motion, pre-hydration logo failure, staff downloads/noindex/preview-master protection, root redirect and unknown-route 404s.
+- Hub outbound requests are intercepted; deep-link redirects are inspected without following their external destinations. Screenshots are in ignored `test-results/hub-{width}.png`; mobile and desktop layouts were visually inspected.
 
-## Verification
+The first browser run exposed incorrect assertions against Next.js local-font aliases, a logo error occurring before hydration, keyboard timing during accordion expansion, and an outbound interception limitation for HTTP redirects. These were corrected. Responsive contrast measurements now wait for the 260ms entrance fade to settle, which removed transient animation measurements without changing the approved colors.
 
-- Core tests: 20 passed, including independent PNG decoding of all four QR targets at 200, 250, 300, and 1024px.
-- Lint: passed, no errors or warnings.
-- TypeScript: passed.
-- Production build: passed; customer routes pre-rendered.
-- Browser tests: 14 passed in approximately 1.3 minutes. All requested viewport checks and the 1280 × 800 laptop card-fit check passed. Screenshots confirmed the real logo and refined layout.
-- Browser coverage includes all six routes at 390, 430, 768, 1024, 1280, and 1440px; no horizontal overflow; axe WCAG A/AA checks; explicit real-logo visibility before screenshots; direct outbound targets; clipboard success/failure; downloads; back navigation; 404; local master download guard; intro timing, skip, storage denial, return navigation, and reduced motion; no-JavaScript link use.
-- A separate 1280 × 800 laptop check verifies all three cards fit vertically within the initial viewport.
-- Actual full-page screenshots are saved under ignored `test-results/` and visually reviewed for the logo, spacing, cards, QR presentation, and footer. Automated accessibility tests are not a full screen-reader certification.
-- External requests are intercepted in tests to verify exact outbound targets without submitting reviews. Native Instagram handoff, real phone-camera scans, printed proofs, and physical NFC tags remain manual checks.
+## Remaining issues
 
-## Production master QR workflow — not performed
-
-1. Establish the real deployed HTTPS origin.
-2. Set `NEXT_PUBLIC_SITE_URL=https://<production-domain>` in the hosting environment, without a path, credentials, query, or fragment.
-3. Rebuild and deploy when separately authorized. If the hostname changes after initial deployment, rebuild/redeploy with the final value.
-4. Verify `https://<production-domain>/mozza-italia` opens the hub on a phone.
-5. Open the deployed `/qr/mozza-italia`, verify the displayed master target, and download the regenerated master PNG.
-6. Scan a final-size physical print proof on iOS and Android before bulk printing. Write the identical hub URL to physical NFC tags and read it back.
-
-Localhost is NEVER production-print-ready and cannot point a phone to the development computer. Master downloads remain disabled for local/preview origins. A public HTTPS configuration permits download but does not establish reachability; physical checks are still required.
-
-## Existing limitations and repository state
-
-The previously recorded full dependency audit has five development-only findings propagated from the unresolved braces advisory through Next lint tooling; the prior production audit was clean. No dependency changes were made in this refinement. Physical device testing and deployment are not claimed.
-
-The branch remains `feature/go-linking-development`. No commit, push, merge, or deployment was performed. The QA server on port 3100 is owned by the browser suite and stops after the run. An existing server on port 3000 was not stopped or replaced.
+No known unresolved implementation issues. Next.js emits a non-blocking warning that a parent-directory lockfile outside this Git repository is ignored. Chrome was used for browser QA; physical-device testing and deployment were not performed.

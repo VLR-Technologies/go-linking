@@ -1,4 +1,14 @@
-export function Footer() {
+export function Footer({ compact = false }: { compact?: boolean }) {
+  if (compact) {
+    return (
+      <footer className="hub-footer">
+        <a href="https://vlrtechnologies.net/">
+          <span>Powered by</span> <strong>VLR Technologies</strong>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </footer>
+    );
+  }
   return (
     <footer className="footer">
       <p>

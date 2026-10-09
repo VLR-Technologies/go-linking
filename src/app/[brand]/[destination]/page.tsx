@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { brands, getBrand, getDestination } from '@/config/brands';
-import { DestinationPage } from '@/components/DestinationPage';
 type Params = Promise<{ brand: string; destination: string }>;
 export function generateStaticParams() {
   return brands.flatMap((brand) =>
@@ -23,7 +22,7 @@ export async function generateMetadata({
     ? {
         title: `${link.title} | ${brand.name}`,
         description: link.description,
-        alternates: { canonical: `/${brand.slug}/${link.id}` },
+        alternates: { canonical: link.url },
       }
     : {};
 }
@@ -33,5 +32,5 @@ export default async function DestinationRoute({ params }: { params: Params }) {
   if (!brand) notFound();
   const destination = getDestination(brand, route.destination);
   if (!destination) notFound();
-  return <DestinationPage brand={brand} destination={destination} />;
+  redirect(destination.url);
 }

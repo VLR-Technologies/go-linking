@@ -1,1 +1,3 @@
-`LOGO.png` is the supplied original restaurant logo (3557 × 1445). Preserve its uppercase filename for case-sensitive hosting. The image has not been redrawn, cropped, or edited. A designed ivory plate and CSS multiply blending integrate its white background. Both the intro and customer pages use this same asset. The text fallback is only used while loading or if the image fails.
+`logo.png` is the supplied original restaurant logo (3557 × 1445). Preserve its lowercase filename for case-sensitive hosting. The image has not been redrawn, cropped or edited. Responsive sizing preserves its proportions, and CSS multiply blending integrates its white background into the ivory hub. The server-rendered image works without JavaScript; a brand-name fallback handles load failures, including failures before hydration.
+
+`chef.png` is retained as an existing brand asset. The customer hub no longer uses a fullscreen intro.

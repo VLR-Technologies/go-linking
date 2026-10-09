@@ -15,12 +15,20 @@ export type Brand = {
   logo: string;
   copy: {
     brandLine: string;
-    welcome: string;
     heading: string;
     description: string;
-    closing: string;
   };
-  theme: { red: string; green: string; cream: string };
+  theme: {
+    red: string;
+    darkRed: string;
+    softRed: string;
+    green: string;
+    cream: string;
+    ink: string;
+    muted: string;
+    surfaceAlt: string;
+    border: string;
+  };
   links: Destination[];
 };
 export const brands: Brand[] = [
@@ -31,18 +39,26 @@ export const brands: Brand[] = [
     logo: '/brands/mozza-italia/logo.png',
     copy: {
       brandLine: 'A LITTLE TASTE OF ITALY',
-      welcome: 'WELCOME TO MOZZA ITALIA',
-      heading: 'What would you like to explore?',
-      description: 'Everything Mozza Italia, just one scan away.',
-      closing: 'One scan. Many ways to connect.',
+      heading: 'MORE MOZZA.\nONE TAP AWAY.',
+      description: 'Your favourite links, all in one place.',
     },
-    theme: { red: '#8f282b', green: '#213f34', cream: '#f8f3e9' },
+    theme: {
+      red: '#A50F16',
+      darkRed: '#7E0B10',
+      softRed: '#F7E7E5',
+      green: '#173D32',
+      cream: '#FFFDF9',
+      ink: '#242220',
+      muted: '#6F6B65',
+      surfaceAlt: '#F7F3EC',
+      border: '#E8E2D8',
+    },
     links: [
       {
         id: 'website',
         kind: 'website',
-        title: 'Visit Our Website',
-        description: 'Explore our menu, locations and more.',
+        title: 'Website',
+        description: 'Discover our menu & more',
         url: 'https://www.mozzaitalia.com',
         cta: 'Open Website',
         cardCta: 'Visit Website',
@@ -50,8 +66,8 @@ export const brands: Brand[] = [
       {
         id: 'instagram',
         kind: 'instagram',
-        title: 'Follow Us on Instagram',
-        description: 'Food updates, reels and more from Mozza Italia.',
+        title: 'Instagram',
+        description: '@italia.mozza',
         handle: '@italia.mozza',
         url: 'https://www.instagram.com/italia.mozza/',
         cta: 'Open Instagram',
@@ -60,8 +76,8 @@ export const brands: Brand[] = [
       {
         id: 'review',
         kind: 'review',
-        title: 'Review Us on Google',
-        description: 'Loved your visit? Share your experience with us.',
+        title: 'Google Reviews',
+        description: 'Tell us about your visit',
         url: 'https://g.page/r/CbxmdpzE3rO4EBM/review',
         cta: 'Leave a Google Review',
         cardCta: 'Leave a Review',

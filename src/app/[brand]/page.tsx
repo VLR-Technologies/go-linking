@@ -4,7 +4,7 @@ import { brands, getBrand } from '@/config/brands';
 import { BrandShell } from '@/components/BrandShell';
 import { BrandHeader } from '@/components/BrandHeader';
 import { DestinationCard } from '@/components/DestinationCard';
-import { BrandIntro } from '@/components/BrandIntro';
+import { CopyLinks } from '@/components/CopyLinks';
 export function generateStaticParams() {
   return brands.map((brand) => ({ brand: brand.slug }));
 }
@@ -38,35 +38,24 @@ export default async function BrandHub({
   const brand = getBrand((await params).brand);
   if (!brand) notFound();
   return (
-    <>
-      <BrandIntro brand={brand} />
-      <BrandShell brand={brand}>
-        <div className="topline">
-          <span className="eyebrow">{brand.copy.welcome}</span>
-          <span className="topline-end">SCAN. CHOOSE. CONNECT.</span>
-        </div>
-        <div className="hub-brand-anchor">
-          <BrandHeader brand={brand} />
-        </div>
-        <section className="hub-section">
-          <div className="section-heading">
-            <span className="eyebrow">FROM OUR TABLE TO YOUR WORLD</span>
-            <h1>{brand.copy.heading}</h1>
-            <p>{brand.copy.description}</p>
-          </div>
-          <div className="destination-grid">
-            {brand.links.map((destination, index) => (
-              <DestinationCard
-                key={destination.id}
-                brand={brand}
-                destination={destination}
-                index={index}
-              />
+    <BrandShell brand={brand}>
+      <BrandHeader brand={brand} />
+      <section className="hub-section" aria-labelledby="hub-heading">
+        <div className="section-heading">
+          <h1 id="hub-heading">
+            {brand.copy.heading.split('\n').map((line) => (
+              <span key={line}>{line}</span>
             ))}
-          </div>
-        </section>
-        <p className="closing-note">{brand.copy.closing}</p>
-      </BrandShell>
-    </>
+          </h1>
+          <p>{brand.copy.description}</p>
+        </div>
+        <nav className="destination-list" aria-label={`${brand.name} links`}>
+          {brand.links.map((destination) => (
+            <DestinationCard key={destination.id} destination={destination} />
+          ))}
+        </nav>
+        <CopyLinks links={brand.links} />
+      </section>
+    </BrandShell>
   );
 }

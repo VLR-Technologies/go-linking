@@ -1,44 +1,32 @@
-import Link from 'next/link';
-import type { Brand, Destination } from '@/config/brands';
+import type { Destination } from '@/config/brands';
 import { Icon } from './Icon';
-export function DestinationCard({
-  brand,
-  destination,
-  index,
-}: {
-  brand: Brand;
-  destination: Destination;
-  index: number;
-}) {
+export function DestinationCard({ destination }: { destination: Destination }) {
   return (
-    <Link
+    <a
       className={`destination-card ${destination.kind}`}
-      href={`/${brand.slug}/${destination.id}`}
+      href={destination.url}
     >
-      <div className="card-top">
-        <span className="icon-badge">
-          <Icon kind={destination.kind} />
-        </span>
-        <span className="card-number">0{index + 1}</span>
-      </div>
+      <span className="icon-badge">
+        <Icon kind={destination.kind} />
+      </span>
       <div className="card-copy">
         <h2>{destination.title}</h2>
         <p>{destination.description}</p>
-        {destination.handle && (
-          <span className="handle">{destination.handle}</span>
-        )}
-        {destination.kind === 'review' && (
-          <span className="stars" aria-hidden="true">
-            ★★★★★
-          </span>
-        )}
       </div>
-      <div className="card-bottom">
-        <span>{destination.cardCta}</span>
-        <span className="arrow" aria-hidden="true">
-          ↗
-        </span>
-      </div>
-    </Link>
+      <svg
+        className="link-arrow"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M7 17 17 7M7 7h10v10" />
+      </svg>
+    </a>
   );
 }

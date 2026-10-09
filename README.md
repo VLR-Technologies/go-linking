@@ -1,6 +1,6 @@
 # Go-Linking
 
-Smart links for physical-to-digital experiences, by VLR Technologies. One master QR or NFC tag opens a branded hub. Customers choose a destination and open it directly; destination QR codes are for sharing, other devices, and printing.
+Smart links for physical-to-digital experiences, by VLR Technologies. One master QR or NFC tag opens a branded hub. Customers open the final destination with one tap. QR codes are kept in a separate staff utility for sharing and printing.
 
 ## Install and run
 
@@ -23,17 +23,17 @@ npm run test:e2e
 npm run start
 ```
 
-Browser tests use installed Microsoft Edge and start a production server automatically. Build first. They cover requested widths, accessibility, navigation, downloads, clipboard, and errors. Outbound requests are intercepted to verify exact targets without contacting third-party sites or submitting reviews. For Chromium, remove `channel: 'msedge'` in playwright.config.ts and install Playwright Chromium.
+Browser tests use installed Microsoft Edge and start a production server automatically. Build first. They cover requested widths, accessibility, navigation, downloads, clipboard, and errors. Outbound requests are intercepted to verify exact targets without contacting third-party sites or submitting reviews. To use installed Chrome, set `PLAYWRIGHT_CHANNEL=chrome`; `msedge` remains the default. `PLAYWRIGHT_PORT` selects a separate local QA port.
 
 ## Routes
 
 | Route                     | Purpose                            |
 | ------------------------- | ---------------------------------- |
-| `/`                       | Minimal Go-Linking introduction    |
+| `/`                       | Server redirect to the Mozza hub   |
 | `/mozza-italia`           | Mozza Italia destination hub       |
-| `/mozza-italia/website`   | Website action and QR              |
-| `/mozza-italia/instagram` | Instagram action and QR            |
-| `/mozza-italia/review`    | Google review action and QR        |
+| `/mozza-italia/website`   | Server redirect to the website     |
+| `/mozza-italia/instagram` | Server redirect to Instagram       |
+| `/mozza-italia/review`    | Server redirect to Google reviews  |
 | `/qr/mozza-italia`        | Unlinked, noindex QR asset utility |
 
 Unknown brands and destinations show a polished 404. The utility is public, not authenticated, and contains only public URLs.
@@ -48,7 +48,7 @@ Unknown brands and destinations show a polished 404. The utility is public, not 
 
 Configuration validates HTTPS links, identifiers, duplicate IDs/slugs, required values, and theme colors. Decorative stars never select or submit a rating. The customer chooses on Google.
 
-The supplied original logo is **`public/brands/mozza-italia/LOGO.png`** (case-sensitive path, 3557 × 1445). Its bytes are unchanged. The header and intro display it with its original proportions inside an ivory brand plate; CSS multiply blending integrates its white background without masking the chef or lettering. A text fallback is retained for load failures, with cached-image hydration handled explicitly. The favicon is a generic Go-Linking chain icon.
+The original logo is **`public/brands/mozza-italia/logo.png`** (case-sensitive, 3557 × 1445). Its bytes and proportions are unchanged. It is visible in server HTML, including without JavaScript, and falls back to the brand name if loading fails. CSS multiply blending integrates its white background with the ivory surface.
 
 To add a brand, add a `Brand` object with a unique slug to `src/config/brands.ts`, put its logo under `public/brands/<slug>/`, and configure destination objects with unique IDs. Existing routes, metadata, and components resolve automatically. Rebuild to pre-render it. Extend the destination kind union and icon component for new categories.
 
@@ -72,15 +72,17 @@ Destination downloads are available independently of the master origin. Before b
 
 Use an NFC writing app and a compatible writable tag. Write a URL/URI record with `https://<production-domain>/mozza-italia`, identical to the master QR target. Read it back on a phone and verify the hub. This application cannot rewrite physical tags. Avoid permanently locking a tag until verification. Future destination changes require only configuration updates while the hub URL remains stable.
 
-## Accessibility and performance
+## Customer experience, accessibility and performance
 
-The hub greets first-time visitors in each tab with a 2.5-second centered logo reveal. The Web Animations API moves the logo plate to the measured position and scale of the actual hub header while the ambient backdrop recedes and the choices reveal underneath. Skip intro, Escape, Tab, or window resizing dismisses it. It does not replay on return from a destination or refresh in the same tab. Reduced-motion visitors bypass it. Optional session storage remembers only whether this visual greeting played; an in-memory fallback supports blocked storage. Without JavaScript, the server-rendered hub and destination links remain usable. No animation library was added.
+The customer hub uses a 520px maximum column, warm ivory surfaces, Mozza's approved colors, Barlow Condensed headings, and Manrope UI text. Fonts are self-hosted with `next/font/local`, using the same files as the restaurant website; SIL Open Font licenses are included in `src/app/fonts/`.
 
-Brand copy is centralized in `brands.ts`. `src/app/brand-experience.css` contains the restaurant presentation layer: compact composition, ivory brand plates, layered glass cards, reflected highlights, accent edges, dimensional CTA controls, and framed QR displays. Desktop content is capped at 1000px. Hover transforms are limited to cards and buttons, never the QR itself. Mobile cards stay compact and readable. The original logo is used in both intro and page header.
+Three 78px semantic anchor rows navigate directly in the same tab to the exact URLs in `brands.ts`. Existing destination routes issue server redirects to those URLs. No customer QR displays or fullscreen intro remain.
 
-For browser QA on a separate port, use `$env:PLAYWRIGHT_PORT='3100'; npm run test:e2e` in PowerShell. The default remains port 3000.
+The optional native `<details>` copy section starts collapsed and works with keyboard or pointer input. Each copy control announces success, briefly shows a checkmark and “Copied!”, and shows a read-only selectable URL on failure. Without JavaScript, the accordion offers manual-copy fields. CSS transitions take 200–260ms; reduced motion disables them. Keyboard expansion makes the copy controls immediately reachable.
 
-Mobile cards stack; desktop cards use three columns. Direct buttons precede QR assets on mobile. Semantic links, skip navigation, visible keyboard focus, status announcements, reduced-motion support, safe areas, and explicit hub navigation are included. External links open separately with `noopener noreferrer`. System fonts and lightweight browser animation avoid remote fonts and large motion packages. Server components generate QR assets; only the intro, logo fallback, and clipboard control need custom client JavaScript.
+Brand configuration, CSS variables and components retain the multi-brand architecture. Presentation lives in `src/app/brand-experience.css`; shared 404 and staff utility styles live in `globals.css`. The staff QR route and generation functions remain independent of the customer hub.
+
+Browser QA covers 360, 390, 430, 768 and 1280px, axe WCAG A/AA checks, keyboard navigation, reduced motion, logo loading/fallback, clipboard success/failure, direct navigation without JavaScript, server redirects, staff downloads and 404s. Third-party targets are intercepted for hub navigation; deep links are verified through their exact server Location headers without following them.
 
 ## Deployment notes — not deployed
 
@@ -104,10 +106,12 @@ package-lock.json
 playwright.config.ts
 tsconfig.json
 public/brands/mozza-italia/README.md
-public/brands/mozza-italia/LOGO.png
+public/brands/mozza-italia/logo.png
 src/
   app/
     layout.tsx
+    fonts.ts
+    fonts/
     page.tsx
     globals.css
     brand-experience.css
@@ -118,11 +122,11 @@ src/
     qr/[brand]/page.tsx
   components/
     BrandHeader.tsx
-    BrandIntro.tsx
     BrandShell.tsx
+    CopyIcon.tsx
     CopyLinkButton.tsx
+    CopyLinks.tsx
     DestinationCard.tsx
-    DestinationPage.tsx
     Footer.tsx
     Icon.tsx
     QRCodeCard.tsx
