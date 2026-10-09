@@ -1,0 +1,1 @@
+`LOGO.png` is the supplied original restaurant logo (3557 × 1445). Preserve its uppercase filename for case-sensitive hosting. The image has not been redrawn, cropped, or edited. A designed ivory plate and CSS multiply blending integrate its white background. Both the intro and customer pages use this same asset. The text fallback is only used while loading or if the image fails.
