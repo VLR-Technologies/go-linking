@@ -1,0 +1,869 @@
+/* Restaurant presentation layer. Functional layouts and utilities live in globals.css. */
+.brand-shell {
+  background:
+    radial-gradient(ellipse at 12% 38%, #76845712, transparent 42%),
+    radial-gradient(ellipse at 88% 18%, #90272a0d, transparent 40%),
+    radial-gradient(ellipse at 50% 0, #fffdf8 5%, #f2ebdd 100%);
+}
+.brand-main,
+.brand-shell > .footer {
+  max-width: 1000px;
+}
+.brand-main {
+  animation: none;
+}
+.botanical {
+  width: 180px;
+  height: 180px;
+  opacity: 0.35;
+  box-shadow:
+    0 0 0 9px #92734505,
+    0 0 0 20px #92734504;
+}
+.botanical-one {
+  left: -130px;
+  top: 340px;
+}
+.botanical-two {
+  right: -125px;
+  top: 160px;
+}
+.topline {
+  padding: 13px 3px;
+  border-bottom-color: #9c84582b;
+}
+.topline .eyebrow,
+.topline-end {
+  font-size: 9px;
+  letter-spacing: 1.8px;
+}
+.brand-header {
+  padding: 22px 0 17px;
+}
+.brand-identity {
+  width: min(350px, 100%);
+  min-height: 0;
+  aspect-ratio: 3557 / 1445;
+  margin: 0 auto;
+  padding: 10px 15px;
+  border: 1px solid #e0d4bc;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fffdf7, #f8f1e2);
+  box-shadow:
+    inset 0 1px 0 white,
+    inset 0 -2px 0 #e5d9c430,
+    0 5px 0 -2px #e6dac9,
+    0 14px 26px #49311b0d;
+  isolation: isolate;
+}
+.brand-logo,
+.compact .brand-logo {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  mix-blend-mode: multiply;
+  object-fit: contain;
+}
+.brand-wordmark,
+.compact .brand-wordmark {
+  font-size: clamp(28px, 6vw, 38px);
+  letter-spacing: -1px;
+}
+.brand-wordmark span,
+.compact .brand-wordmark span {
+  font-size: 7px;
+  margin-top: 9px;
+  letter-spacing: 1.4px;
+}
+.brand-header .tricolore {
+  width: 36px;
+  height: 2px;
+  margin: 14px auto 10px;
+}
+.brand-header .tagline {
+  font-size: 16px;
+  color: #4e5745;
+}
+.section-heading {
+  margin-bottom: 21px;
+}
+.section-heading .eyebrow {
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+.section-heading h1 {
+  margin-top: 8px;
+  font-size: clamp(26px, 3.2vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.9px;
+  text-shadow:
+    0 1px 0 #fff,
+    0 3px 6px #5143330b;
+}
+.section-heading p {
+  margin-top: 8px;
+  font-size: 13px;
+}
+.destination-grid {
+  gap: 18px;
+  perspective: 1100px;
+}
+.destination-card {
+  --card-accent: #8f282b;
+  min-height: 260px;
+  padding: 23px;
+  border: 1px solid #ffffff40;
+  border-radius: 22px;
+  color: #fff9ef;
+  background: linear-gradient(145deg, #a32632, #8f1f2b 45%, #7e1823);
+  box-shadow:
+    inset 0 0 0 1px #ffffff26,
+    inset 0 2px 0 #ffffff5c,
+    0 4px 0 -1px #241c25,
+    0 9px 14px #241c2518,
+    0 20px 34px #241c2512;
+  transition:
+    transform 0.24s ease,
+    box-shadow 0.24s ease;
+}
+.destination-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    125deg,
+    transparent 25%,
+    #ffffff20 45%,
+    #ffffff05 60%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  transition: background-position 0.6s ease;
+}
+.destination-card::after {
+  content: '';
+  position: absolute;
+  left: 23px;
+  right: 23px;
+  top: 0;
+  height: 3px;
+  background: var(--card-accent);
+  border-radius: 0 0 8px 8px;
+  opacity: 0.8;
+}
+.destination-card.website {
+  background: linear-gradient(145deg, #a32632, #8f1f2b 45%, #7e1823);
+  border-color: #ffffff40;
+  color: #fff9ef;
+  box-shadow:
+    inset 0 0 0 1px #ffffff26,
+    inset 0 2px 0 #ffffff5c,
+    0 4px 0 -1px #241c25,
+    0 9px 14px #241c2518,
+    0 20px 34px #241c2512;
+}
+.destination-card.website::after {
+  background: #e5c493;
+}
+.destination-card.instagram {
+  --card-accent: linear-gradient(90deg, #ba7936, #a34252, #735269);
+  background: linear-gradient(145deg, #4b1838, #7a214c 55%, #943050);
+}
+.destination-card.review {
+  background: linear-gradient(145deg, #12382f, #16483b 55%, #1e5545);
+  --card-accent: linear-gradient(
+    90deg,
+    #5b7050 0 32%,
+    #b38b41 32% 69%,
+    #996154 69%
+  );
+}
+.card-top {
+  margin-bottom: 21px;
+}
+.card-number {
+  font:
+    11px Arial,
+    sans-serif;
+  letter-spacing: 1px;
+  opacity: 1;
+  color: #686253;
+}
+.website .card-number {
+  color: #f5ddc4;
+}
+.destination-card .card-number {
+  color: #fff4e7;
+}
+.destination-card .card-copy h2 {
+  text-shadow: 0 2px 2px #241c2555;
+}
+.destination-card .card-copy p {
+  color: #fff4e7;
+}
+.destination-card .handle {
+  color: #ffe0e8;
+}
+.destination-card .stars {
+  color: #f2cf83;
+}
+.destination-card .card-bottom {
+  border-top-color: #ffffff35;
+}
+.destination-card .card-bottom .arrow {
+  background: #ffffff14;
+  color: #fff8eb;
+  border-color: #ffffff50;
+  box-shadow: inset 0 1px 0 #ffffff30;
+}
+.destination-card.instagram .icon-badge {
+  background: linear-gradient(145deg, #854e21, #9b3456 50%, #663361);
+  color: #fff9ef;
+  border-color: #ffffff45;
+}
+.destination-card.review .icon-badge {
+  background: linear-gradient(145deg, #ffffff25, #ffffff0a);
+  color: #f2cf83;
+  border-color: #ffffff45;
+}
+.destination-card .icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #ffffff99;
+  box-shadow:
+    inset 0 2px 0 #ffffff70,
+    0 5px 9px #44311c15;
+}
+.destination-card.website .icon-badge {
+  background: linear-gradient(145deg, #ffffff25, #ffffff0a);
+  border-color: #ffffff45;
+}
+.card-copy h2 {
+  font-size: 25px;
+  line-height: 1.12;
+  letter-spacing: -0.6px;
+  text-shadow: 0 1px 0 #ffffff80;
+}
+.website .card-copy h2 {
+  text-shadow: 0 2px 2px #49192255;
+}
+.card-copy p {
+  max-width: none;
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: #5a5b50;
+}
+.website .card-copy p {
+  color: #fff4e7;
+}
+.card-copy .handle {
+  font-size: 11px;
+}
+.card-copy .stars {
+  font-size: 14px;
+  margin-top: 9px;
+}
+.card-bottom {
+  margin-top: 18px;
+  padding-top: 13px;
+  font-size: 12px;
+  border-top-color: #b7a98b50;
+}
+.card-bottom .arrow {
+  width: 33px;
+  height: 33px;
+  flex-shrink: 0;
+  background: #fffdf6b3;
+  color: #5b614e;
+  border-color: #b5aa8f;
+  box-shadow:
+    inset 0 1px 0 white,
+    0 2px 4px #443c2010;
+  transition:
+    transform 0.24s,
+    background 0.24s;
+}
+.website .card-bottom .arrow {
+  background: #ffffff14;
+  color: #fff8eb;
+  border-color: #ffffff50;
+  box-shadow: inset 0 1px 0 #ffffff30;
+}
+@media (hover: hover) and (pointer: fine) {
+  .destination-card:hover {
+    transform: translateY(-5px) rotateX(2deg);
+    box-shadow:
+      inset 0 1px 0 #ffffff60,
+      0 5px 0 -1px #241c25,
+      0 22px 32px #241c2525;
+  }
+  .destination-card.website:hover {
+    box-shadow:
+      inset 0 1px 0 #ffffff60,
+      0 5px 0 -1px #241c25,
+      0 22px 32px #241c2525;
+  }
+  .destination-card:hover::before {
+    background-position: 0 0;
+  }
+  .destination-card:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+}
+.destination-card:active {
+  transform: translateY(2px) scale(0.99);
+}
+.closing-note {
+  margin: 22px 0 18px;
+  font-size: 11px;
+  color: #626250;
+}
+.brand-shell > .footer {
+  border-top: 1px solid #b8a88845;
+  background: linear-gradient(180deg, #ffffff44, transparent);
+  border-radius: 20px 20px 0 0;
+  padding: 13px 12px 16px;
+  font-size: 10px;
+}
+.footer a {
+  min-height: 32px;
+}
+.footer small {
+  font-size: 9px;
+}
+.back-nav {
+  padding: 9px 0;
+  border-bottom-color: #9c84582b;
+}
+.back-nav a {
+  padding: 0 15px;
+  border: 1px solid #d4c8b6;
+  border-radius: 30px;
+  background: #fffdf7a8;
+  box-shadow:
+    inset 0 1px 0 white,
+    0 3px 8px #483b2610;
+}
+.compact {
+  padding: 18px 0 20px;
+}
+.compact .brand-identity {
+  width: min(270px, 100%);
+  min-height: 0;
+  border-radius: 20px;
+}
+.compact .tagline {
+  font-size: 14px;
+}
+.compact .tricolore {
+  margin: 11px auto 8px;
+}
+.destination-panel {
+  max-width: 860px;
+  grid-template-columns: 1.15fr 1fr;
+  margin-top: 0;
+  border: 1px solid #fdfaf3;
+  border-radius: 26px;
+  background: linear-gradient(125deg, #ffffffdd, #f8f1e4d9);
+  box-shadow:
+    inset 0 0 0 1px #c8b79866,
+    0 5px 0 -2px #d7cab6,
+    0 20px 45px #4a362014;
+}
+.destination-intro {
+  padding: 30px;
+}
+.destination-intro > .icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+}
+.destination-intro h1 {
+  font-size: 34px;
+  text-shadow:
+    0 1px 0 white,
+    0 3px 8px #4032200b;
+  margin: 10px 0 12px;
+}
+.destination-panel.instagram .destination-intro > .icon-badge {
+  background: linear-gradient(135deg, #b17d36, #963f52, #685167);
+  color: white;
+}
+.destination-panel.review .destination-intro > .icon-badge {
+  background: linear-gradient(135deg, #446049, #233e32);
+  color: #fff4dd;
+}
+.primary-button {
+  min-height: 54px;
+  border-radius: 13px;
+  font-size: 13px;
+  letter-spacing: 0.1px;
+  background: linear-gradient(165deg, #b55351 -35%, #8f282b 45%, #6e2127);
+  box-shadow:
+    inset 0 2px 0 #ffffff35,
+    0 3px 0 #601d23,
+    0 10px 16px #73252a20;
+}
+.primary-button:hover {
+  background: linear-gradient(165deg, #a74748, #722029);
+}
+.primary-button:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 #ffffff30,
+    0 1px 0 #601d23;
+}
+.copy-control .text-button,
+.qr-card .download {
+  border: 1px solid #cbbd9e;
+  border-radius: 10px;
+  background: #fffcf4a8;
+  text-decoration: none;
+  min-height: 44px;
+  font-weight: 600;
+  padding: 10px 18px;
+}
+.copy-control {
+  margin-top: 15px;
+}
+.qr-card .download {
+  margin-top: 12px;
+  width: 100%;
+}
+.destination-qr {
+  position: relative;
+  padding: 25px;
+  background:
+    radial-gradient(ellipse at center, #ffffffb3, transparent 68%),
+    linear-gradient(135deg, #e9dfc880, #faf5e9b3 60%, #dfc9b65c);
+  border-left: 1px solid #b7a17c40;
+}
+.destination-panel.instagram .destination-qr {
+  background:
+    radial-gradient(ellipse at 80% 10%, #e3c3c24a, transparent 60%),
+    linear-gradient(135deg, #e9dfc880, #faf5e9b3);
+}
+.destination-panel.review .destination-qr {
+  background:
+    radial-gradient(ellipse at 80% 10%, #d4ddc54d, transparent 60%),
+    linear-gradient(135deg, #e9dfc880, #faf5e9b3);
+}
+.qr-overline {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #695b3d;
+  font-weight: 700;
+  margin-bottom: 17px;
+}
+.qr-frame {
+  padding: 8px;
+  border: 1px solid #cab790;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    0 0 0 5px #fffcf499,
+    0 0 0 6px #d3c3a666,
+    0 6px 0 2px #d9cbb366,
+    0 16px 22px #55402718;
+}
+.qr-image {
+  background: #fff;
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+.qr-caption {
+  margin-top: 18px;
+  font-size: 11px;
+}
+.qr-use {
+  font-size: 12px;
+  margin-top: 16px;
+}
+.brand-intro {
+  background:
+    radial-gradient(ellipse at 20% 70%, #71382912, transparent 60%),
+    radial-gradient(ellipse at center, #fffaf0, #eee4d5);
+  animation: connected-curtain 2.5s linear both;
+}
+.intro-brand {
+  width: min(440px, 100%);
+  animation: none;
+}
+.intro-brand .brand-header {
+  padding: 0;
+}
+.intro-brand .brand-identity {
+  width: 100%;
+}
+.intro-brand .brand-wordmark {
+  font-size: clamp(28px, 6vw, 38px);
+}
+.intro-light {
+  width: min(90vw, 640px);
+  background: radial-gradient(circle, #fffaf2, #e3c99b30 48%, transparent 70%);
+  animation-duration: 2.5s;
+}
+.brand-intro ~ .brand-shell .hub-brand-anchor {
+  animation: header-arrives 2.5s linear both;
+}
+.brand-intro ~ .brand-shell .hub-section {
+  animation: choices-arrive 2.5s ease-out both;
+}
+@keyframes connected-curtain {
+  0%,
+  52% {
+    background-color: #f8f3e9;
+    opacity: 1;
+  }
+  84%,
+  95% {
+    background-color: transparent;
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* Fade only the ambient backdrop while the logo travels to the measured header position. */
+.brand-intro {
+  background: none;
+}
+.brand-intro::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 70%, #71382912, transparent 60%),
+    radial-gradient(ellipse at center, #fffaf0, #eee4d5);
+  animation: backdrop-recedes 2.5s linear both;
+}
+@keyframes backdrop-recedes {
+  0%,
+  52% {
+    opacity: 1;
+  }
+  85%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes header-arrives {
+  0%,
+  88% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes choices-arrive {
+  0%,
+  58% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  92%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (min-width: 768px) and (max-height: 820px) {
+  .brand-header {
+    padding: 15px 0 13px;
+  }
+  .brand-identity {
+    width: 310px;
+  }
+  .destination-card {
+    min-height: 250px;
+  }
+}
+@media (max-width: 767px) {
+  .brand-shell {
+    padding-left: max(18px, env(safe-area-inset-left));
+    padding-right: max(18px, env(safe-area-inset-right));
+  }
+  .topline {
+    padding: 12px 0;
+    text-align: center;
+    justify-content: center;
+  }
+  .topline .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.4px;
+  }
+  .brand-header {
+    padding: 18px 0 15px;
+  }
+  .brand-identity {
+    width: min(290px, 100%);
+    padding: 8px 10px;
+    border-radius: 20px;
+  }
+  .brand-header .tagline {
+    font-size: 15px;
+  }
+  .brand-header .tricolore {
+    margin: 12px auto 8px;
+  }
+  .section-heading {
+    margin-bottom: 18px;
+  }
+  .section-heading h1 {
+    font-size: 27px;
+    max-width: 340px;
+  }
+  .section-heading p {
+    font-size: 12px;
+    line-height: 1.55;
+    max-width: 280px;
+    margin: 8px auto 0;
+  }
+  .destination-grid {
+    gap: 13px;
+  }
+  .destination-card {
+    min-height: 0;
+    padding: 18px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    column-gap: 13px;
+    border-radius: 19px;
+  }
+  .card-top {
+    margin-bottom: 0;
+  }
+  .destination-card .icon-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+  .card-copy h2 {
+    font-size: 21px;
+    letter-spacing: -0.5px;
+  }
+  .card-copy p {
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 7px;
+  }
+  .card-copy .handle {
+    font-size: 10px;
+    margin-top: 6px;
+  }
+  .card-copy .stars {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  .card-bottom {
+    margin-top: 11px;
+    padding-top: 8px;
+    font-size: 11px;
+  }
+  .card-bottom .arrow {
+    width: 27px;
+    height: 27px;
+  }
+  .closing-note {
+    margin: 19px 0 15px;
+    font-size: 10px;
+  }
+  .brand-shell > .footer {
+    padding-top: 12px;
+  }
+  .compact {
+    padding: 15px 0 18px;
+  }
+  .compact .brand-identity {
+    width: 240px;
+  }
+  .compact .tagline {
+    font-size: 14px;
+  }
+  .destination-panel {
+    grid-template-columns: 1fr;
+    border-radius: 23px;
+  }
+  .destination-intro {
+    padding: 24px 23px 15px;
+  }
+  .destination-intro h1 {
+    font-size: 29px;
+  }
+  .destination-intro > .icon-badge {
+    margin-bottom: 12px;
+  }
+  .destination-qr {
+    padding: 24px;
+    border-left: 0;
+    border-top: 1px solid #b7a17c40;
+  }
+  .intro-brand {
+    width: min(330px, 100%);
+  }
+  .intro-brand .brand-identity {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-intro {
+    display: none;
+  }
+  .destination-card:hover,
+  .destination-card:active,
+  .destination-card:hover .arrow,
+  .primary-button:hover,
+  .primary-button:active {
+    transform: none;
+  }
+}
+@media print {
+  .brand-shell {
+    background: white;
+  }
+  .brand-intro {
+    display: none;
+  }
+  .destination-panel,
+  .qr-frame {
+    box-shadow: none;
+  }
+}
+
+/* Chef intro only: these rules cease to apply when the overlay unmounts. */
+.chef-intro {
+  animation: chef-curtain 1.35s linear both;
+}
+.chef-intro .intro-light {
+  animation-duration: 1.35s;
+}
+.chef-intro::before {
+  animation: chef-backdrop 1.35s linear both;
+}
+.chef-intro .intro-identity {
+  background: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+.chef-intro .intro-plate {
+  position: absolute;
+  inset: -1px;
+  border: 1px solid #e0d4bc;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #fffdf7, #f8f1e2);
+  box-shadow:
+    inset 0 1px 0 white,
+    inset 0 -2px 0 #e5d9c430,
+    0 5px 0 -2px #e6dac9,
+    0 14px 26px #49311b0d;
+}
+.chef-intro .intro-artwork {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3557 / 1445;
+  mix-blend-mode: multiply;
+}
+.chef-intro .intro-logo-full,
+.chef-intro .intro-logo-wings,
+.chef-intro .intro-logo-wings img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.chef-intro .intro-logo-wings {
+  position: absolute;
+  inset: 0;
+}
+.chef-intro .intro-logo-wings img {
+  clip-path: polygon(
+    0 0,
+    39% 0,
+    39% 70%,
+    60% 70%,
+    60% 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+.chef-intro .intro-chef {
+  position: absolute;
+  width: 26%;
+  height: auto;
+  left: 36%;
+  top: 3%;
+  transform-origin: center;
+  filter: drop-shadow(0 3px 2px #3823180c);
+}
+.chef-intro .intro-tagline {
+  animation: chef-tagline 1.35s linear both;
+}
+.chef-intro ~ .brand-shell .hub-brand-anchor {
+  animation: chef-header 1.35s linear both;
+}
+.chef-intro ~ .brand-shell .hub-section,
+.chef-intro ~ .brand-shell .closing-note,
+.chef-intro ~ .brand-shell > .footer {
+  animation: chef-content 1.35s ease-out both;
+}
+@keyframes chef-curtain {
+  0%,
+  96% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes chef-backdrop {
+  0%,
+  66% {
+    opacity: 1;
+  }
+  88%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes chef-tagline {
+  0%,
+  86% {
+    opacity: 0;
+  }
+  94%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes chef-header {
+  0%,
+  92% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes chef-content {
+  0%,
+  88% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.chef-intro .intro-brand {
+  mix-blend-mode: multiply;
+}
