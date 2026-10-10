@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="dough" x1="40" y1="35" x2="128" y2="178" gradientUnits="userSpaceOnUse"><stop stop-color="#F7CF7F"/><stop offset="1" stop-color="#B96B2C"/></linearGradient>
+    <linearGradient id="cheese" x1="72" y1="47" x2="144" y2="166" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF0A5"/><stop offset=".58" stop-color="#FFD264"/><stop offset="1" stop-color="#ED9D31"/></linearGradient>
+    <linearGradient id="crust" x1="100" y1="27" x2="100" y2="61" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE1A1"/><stop offset=".45" stop-color="#EBB361"/><stop offset="1" stop-color="#BB6D31"/></linearGradient>
+    <radialGradient id="salami"><stop stop-color="#EB6D43"/><stop offset=".78" stop-color="#D84A30"/><stop offset="1" stop-color="#A93121"/></radialGradient>
+  </defs>
+  <path d="M30 48q64-29 132 0l-27 126q-2 9-10 4Z" fill="url(#dough)"/>
+  <path d="M39 54q56-24 116-3l-25 117q-1 5-5 0Z" fill="#BD4B29"/>
+  <path d="M43 53q55-22 108 0l-23 114-21-28q-4 4-7-2l-4-9-53-75Z" fill="url(#cheese)"/>
+  <path d="M30 46q62-30 131-1" stroke="#A45C27" stroke-width="22" stroke-linecap="round"/>
+  <path d="M30 40q63-29 131 0" stroke="url(#crust)" stroke-width="22" stroke-linecap="round"/>
+  <path d="M36 35q55-21 116-1" stroke="#FFEAC0" stroke-width="4" stroke-linecap="round" opacity=".75"/>
+  <ellipse cx="77" cy="65" rx="15" ry="13" fill="#B05E29" opacity=".24"/><ellipse cx="77" cy="62" rx="15" ry="13" fill="url(#salami)"/>
+  <ellipse cx="122" cy="81" rx="15" ry="13" fill="#B05E29" opacity=".24"/><ellipse cx="122" cy="78" rx="15" ry="13" fill="url(#salami)"/>
+  <ellipse cx="111" cy="122" rx="12" ry="11" fill="#B05E29" opacity=".24"/><ellipse cx="111" cy="119" rx="12" ry="11" fill="url(#salami)"/>
+  <g fill="#F79961"><circle cx="73" cy="58" r="2"/><circle cx="80" cy="65" r="1.5"/><circle cx="123" cy="73" r="2"/><circle cx="116" cy="80" r="1.5"/><circle cx="108" cy="115" r="2"/></g>
+  <g fill="#AF712E" opacity=".6"><circle cx="99" cy="58" r="2"/><circle cx="90" cy="90" r="2.4"/><circle cx="132" cy="102" r="1.7"/><circle cx="128" cy="145" r="1.7"/><circle cx="54" cy="48" r="1.4"/></g>
+  <path d="M88 97q3-18 18-17 4 15-18 17Z" fill="#367442"/><path d="m89 95 12-10" stroke="#A5C774" stroke-width="1.2"/>
+  <path d="M128 58q-2-13 9-18 7 14-9 18Z" fill="#41884B"/>
+  <path d="m64 82 11 11m40 47 5 7" stroke="#FFF2B8" stroke-width="3" stroke-linecap="round"/>
+</svg>

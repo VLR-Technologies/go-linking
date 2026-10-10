@@ -20,5 +20,5 @@ test('root returns a server redirect without the former landing page', async ({
   await expect(page).toHaveURL('/mozza-italia');
   await expect(page.getByTestId('brand-intro')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.locator('.destination-card')).toHaveCount(3);
+  await expect(page.locator('.destination-card')).toHaveCount(4);
 });

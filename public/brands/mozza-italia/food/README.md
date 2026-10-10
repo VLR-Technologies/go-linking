@@ -1,0 +1,1 @@
+Original SVG food illustrations authored for the Mozza Italia Go-Linking page. Pizza, burger, fries, basil and tomatoes use local vector shapes and gradients; no stock photography, emoji artwork, external imagery or font assets are embedded. `grain.svg` supplies the subtle static background texture. Food shapes are decorative and do not represent exact menu-item presentation.

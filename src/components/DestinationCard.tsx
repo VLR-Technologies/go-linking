@@ -10,13 +10,29 @@ export function DestinationCard({ destination }: { destination: Destination }) {
         <Icon kind={destination.kind} />
       </span>
       <div className="card-copy">
-        <h2>{destination.title}</h2>
+        <h2>
+          {destination.title}
+          {destination.kind === 'review' && (
+            <svg
+              className="review-star"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="m12 2 3 6.3 7 .9-5 4.9 1.2 6.9-6.2-3.3L5.8 21 7 14.1 2 9.2l7-.9Z"
+                fill="currentColor"
+              />
+            </svg>
+          )}
+        </h2>
         <p>{destination.description}</p>
       </div>
       <svg
         className="link-arrow"
-        width="20"
-        height="20"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

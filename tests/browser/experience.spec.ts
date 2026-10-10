@@ -14,7 +14,13 @@ for (const width of [360, 390, 430, 768, 1280]) {
     // Contrast measurements need the settled state of the brief entrance fade.
     await page.evaluate(() =>
       Promise.all(
-        document.getAnimations().map((animation) => animation.finished),
+        document
+          .getAnimations()
+          .filter(
+            (animation) =>
+              animation.effect?.getTiming().iterations !== Infinity,
+          )
+          .map((animation) => animation.finished),
       ),
     );
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
@@ -27,7 +33,7 @@ for (const width of [360, 390, 430, 768, 1280]) {
     );
     await expect(page.getByTestId('brand-intro')).toHaveCount(0);
     await expect(page.locator('.qr-card, .qr-image')).toHaveCount(0);
-    await expect(page.locator('.destination-card')).toHaveCount(3);
+    await expect(page.locator('.destination-card')).toHaveCount(4);
     await expect(page.locator('.copy-links')).not.toHaveAttribute('open');
     expect(
       await page.evaluate(
@@ -39,9 +45,20 @@ for (const width of [360, 390, 430, 768, 1280]) {
     expect(Math.abs(column!.x + column!.width / 2 - width / 2)).toBeLessThan(1);
     const logo = await page.locator('.brand-logo').boundingBox();
     expect(logo!.width / logo!.height).toBeCloseTo(3557 / 1445, 2);
+    await expect(page.locator('.card-copy h2')).toHaveText(
+      brand.links.map((link) => link.title),
+    );
     const rows = await page.locator('.destination-card').all();
     for (const row of rows) {
       const box = await row.boundingBox();
+      expect(
+        await row
+          .locator('.icon-badge img')
+          .evaluate(
+            (image: HTMLImageElement) =>
+              image.complete && image.naturalWidth > 0,
+          ),
+      ).toBe(true);
       expect(box!.height).toBeGreaterThanOrEqual(70);
       expect(box!.height).toBeLessThanOrEqual(80);
       expect(box!.width).toBeCloseTo(column!.width, 0);
@@ -69,6 +86,13 @@ for (const width of [360, 390, 430, 768, 1280]) {
           .analyze()
       ).violations,
     ).toEqual([]);
+    await expect(page.locator('.food-piece:visible')).toHaveCount(
+      width < 768 ? 3 : 6,
+    );
+    await expect(page.locator('.food-scene')).toHaveCSS(
+      'pointer-events',
+      'none',
+    );
     await page.screenshot({
       path: `test-results/hub-${width}.png`,
       fullPage: true,
@@ -76,7 +100,7 @@ for (const width of [360, 390, 430, 768, 1280]) {
     await page.locator('summary').click();
     await expect(
       page.getByRole('button', { name: /Copy .* link/ }),
-    ).toHaveCount(3);
+    ).toHaveCount(4);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
@@ -93,7 +117,7 @@ for (const width of [360, 390, 430, 768, 1280]) {
     await expect(
       page.getByRole('heading', { name: 'QR Assets', exact: true }),
     ).toBeVisible();
-    await expect(page.locator('.qr-image')).toHaveCount(4);
+    await expect(page.locator('.qr-image')).toHaveCount(5);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
@@ -146,6 +170,13 @@ test('all destinations, original logo and manual copying work without JavaScript
   }
   await page.goto('/mozza-italia');
   await expect(page.locator('.brand-logo')).toBeVisible();
+  await page
+    .getByRole('checkbox', { name: 'Pause background animation' })
+    .check();
+  await expect(page.locator('.food-piece').first()).toHaveCSS(
+    'animation-play-state',
+    'paused',
+  );
   await page.locator('summary').click();
   for (const link of brand.links) {
     await expect(
@@ -273,11 +304,11 @@ test('keyboard reaches every destination, opens the accordion and copies', async
   await expect(page.locator('.copy-links')).toHaveAttribute('open');
   await page.keyboard.press('Tab');
   await expect(
-    page.getByRole('button', { name: 'Copy Website link', exact: true }),
+    page.getByRole('button', { name: 'Copy Google Reviews link', exact: true }),
   ).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status').first()).toHaveText(
-    'Website link copied.',
+    'Google Reviews link copied.',
   );
 });
 
@@ -288,7 +319,20 @@ test('reduced motion disables animations and movement; missing logo falls back',
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/mozza-italia');
   await expect(page.locator('.brand-wordmark')).toBeVisible();
-  await expect(page.locator('.brand-main')).toHaveCSS('animation-name', 'none');
+  await expect(page.locator('.brand-header')).toHaveCSS(
+    'animation-name',
+    'none',
+  );
+  await expect(page.locator('.section-heading')).toHaveCSS(
+    'animation-name',
+    'none',
+  );
+  for (const piece of await page.locator('.food-piece').all()) {
+    await expect(piece).toHaveCSS('animation-name', 'none');
+  }
+  await expect(
+    page.getByRole('checkbox', { name: 'Pause background animation' }),
+  ).toHaveCount(0);
   const row = page.locator('.destination-card').first();
   await row.hover();
   await expect(row).toHaveCSS('transition-duration', '0s');
@@ -349,3 +393,87 @@ test('unknown routes return 404 and cannot redirect externally', async ({
     ).toHaveAttribute('href', '/');
   }
 });
+
+for (const width of [360, 430, 768, 1280]) {
+  test(`food floats stay clear of content, clip safely, and can be paused at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/mozza-italia');
+    await page.evaluate(() => document.fonts.ready);
+    const pause = page.getByRole('checkbox', {
+      name: 'Pause background animation',
+    });
+    await pause.check();
+    for (const piece of await page.locator('.food-piece:visible').all()) {
+      await expect(piece).toHaveCSS('animation-play-state', 'paused');
+      expect(
+        await piece
+          .locator('img')
+          .evaluate(
+            (image: HTMLImageElement) =>
+              image.complete && image.naturalWidth > 0,
+          ),
+      ).toBe(true);
+    }
+    await pause.uncheck();
+    for (const phase of [0.2, 0.5, 0.8]) {
+      await page.evaluate((phase) => {
+        for (const animation of document.getAnimations()) {
+          const timing = animation.effect?.getTiming();
+          if (timing?.iterations === Infinity) {
+            animation.pause();
+            animation.currentTime = Number(timing.duration) * phase;
+          }
+        }
+      }, phase);
+      const protectedContent = await page
+        .locator(width < 768 ? '.hub-section' : '.brand-main')
+        .boundingBox();
+      const scene = await page.locator('.food-scene').boundingBox();
+      for (const piece of await page.locator('.food-piece:visible').all()) {
+        const box = await piece.boundingBox();
+        // Intersect with the clipped scene before testing overlap.
+        const left = Math.max(box!.x, scene!.x);
+        const right = Math.min(box!.x + box!.width, scene!.x + scene!.width);
+        const top = Math.max(box!.y, scene!.y);
+        const bottom = Math.min(box!.y + box!.height, scene!.y + scene!.height);
+        const content = protectedContent!;
+        const overlaps =
+          right > left &&
+          bottom > top &&
+          right > content.x &&
+          left < content.x + content.width &&
+          bottom > content.y &&
+          top < content.y + content.height;
+        expect(overlaps).toBe(false);
+      }
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      for (const row of await page.locator('.destination-card').all()) {
+        expect(
+          await row.evaluate((element) => {
+            const box = element.getBoundingClientRect();
+            return element.contains(
+              document.elementFromPoint(
+                box.x + box.width / 2,
+                box.y + box.height / 2,
+              ),
+            );
+          }),
+        ).toBe(true);
+      }
+    }
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const scene = (await page.locator('.food-scene').boundingBox())!;
+    for (const piece of await page.locator('.food-piece:visible').all()) {
+      await expect(piece).toHaveCSS('animation-name', 'none');
+      const box = (await piece.boundingBox())!;
+      expect(box.y + box.height).toBeGreaterThan(scene.y);
+      expect(box.y).toBeLessThan(scene.y + scene.height);
+    }
+  });
+}

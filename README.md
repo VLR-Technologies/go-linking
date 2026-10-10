@@ -6,9 +6,9 @@ Smart links for physical-to-digital experiences, by VLR Technologies. One master
 
 Requires Node.js 20.9+ and npm. Node 24 is recommended.
 
-```powershell
+```bash
 npm ci
-Copy-Item .env.example .env.local
+cp .env.example .env.local
 npm run dev
 ```
 
@@ -34,6 +34,7 @@ Browser tests use installed Microsoft Edge and start a production server automat
 | `/mozza-italia/website`   | Server redirect to the website     |
 | `/mozza-italia/instagram` | Server redirect to Instagram       |
 | `/mozza-italia/review`    | Server redirect to Google reviews  |
+| `/mozza-italia/whatsapp`  | Server redirect to WhatsApp        |
 | `/qr/mozza-italia`        | Unlinked, noindex QR asset utility |
 
 Unknown brands and destinations show a polished 404. The utility is public, not authenticated, and contains only public URLs.
@@ -42,9 +43,12 @@ Unknown brands and destinations show a polished 404. The utility is public, not 
 
 `src/config/brands.ts` centralizes name, tagline, theme, logo, links, and handle. Exact configured destinations:
 
+- Google review: https://g.page/r/CbxmdpzE3rO4EBM/review
 - Website: https://www.mozzaitalia.com
 - Instagram: https://www.instagram.com/italia.mozza/
-- Google review: https://g.page/r/CbxmdpzE3rO4EBM/review
+- WhatsApp: https://wa.me/919949799488?text=Hi%20Mozza%20Italia%2C%20I%20would%20like%20to%20place%20an%20order.
+
+The WhatsApp number matches the [official website](https://www.mozzaitalia.com). The page says “Order directly with our team”; a no-platform-fees policy could not be verified, so no fee claim is published.
 
 Configuration validates HTTPS links, identifiers, duplicate IDs/slugs, required values, and theme colors. Decorative stars never select or submit a rating. The customer chooses on Google.
 
@@ -64,7 +68,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 This must be an HTTP(S) origin without a path, query, fragment, or credentials. The local master is `http://localhost:3000/mozza-italia`. **Localhost on a phone means the phone itself, not the development computer.** Use the computer's LAN IP and allow local server access for phone testing. LAN master downloads remain disabled.
 
-For production, set the actual deployed HTTPS origin and rebuild. `/qr/mozza-italia` shows all four assets and their encoded URLs. Master download is disabled for missing configuration, HTTP, loopback, common private addresses, and reserved/example hostnames. A public HTTPS origin enables download but does not verify deployment or reachability. The master is production-print-ready only after the actual domain serves the hub and phone-camera and physical-proof tests pass.
+For production, set the actual deployed HTTPS origin and rebuild. `/qr/mozza-italia` shows the master and all four destination assets and their encoded URLs. Master download is disabled for missing configuration, HTTP, loopback, common private addresses, and reserved/example hostnames. A public HTTPS origin enables download but does not verify deployment or reachability. The master is production-print-ready only after the actual domain serves the hub and phone-camera and physical-proof tests pass.
 
 Destination downloads are available independently of the master origin. Before bulk printing, scan final-size proofs in realistic lighting on the chosen material using iOS and Android. Preserve the white border. Automated image decoding cannot replace physical testing.
 
@@ -74,15 +78,17 @@ Use an NFC writing app and a compatible writable tag. Write a URL/URI record wit
 
 ## Customer experience, accessibility and performance
 
-The customer hub uses a 520px maximum column, warm ivory surfaces, Mozza's approved colors, Barlow Condensed headings, and Manrope UI text. Fonts are self-hosted with `next/font/local`, using the same files as the restaurant website; SIL Open Font licenses are included in `src/app/fonts/`.
+The customer hub uses a 500px maximum column, warm ivory and pastel surfaces, Mozza's red and green with peach, mango and lavender accents, Barlow Condensed headings, and Manrope UI text. Fonts are self-hosted with `next/font/local`, using the same files as the restaurant website; SIL Open Font licenses are included in `src/app/fonts/`.
 
-Three 78px semantic anchor rows navigate directly in the same tab to the exact URLs in `brands.ts`. Existing destination routes issue server redirects to those URLs. No customer QR displays or fullscreen intro remain.
+Four 78px semantic anchor rows, ordered Google Reviews, Website, Instagram and WhatsApp, navigate directly in the same tab to the exact URLs in `brands.ts`. Existing destination routes issue server redirects to those URLs. No customer QR displays or fullscreen intro remain.
 
-The optional native `<details>` copy section starts collapsed and works with keyboard or pointer input. Each copy control announces success, briefly shows a checkmark and “Copied!”, and shows a read-only selectable URL on failure. Without JavaScript, the accordion offers manual-copy fields. CSS transitions take 200–260ms; reduced motion disables them. Keyboard expansion makes the copy controls immediately reachable.
+The optional native `<details>` copy section starts collapsed and works with keyboard or pointer input. Each copy control announces success, briefly shows a checkmark and “Copied!”, and shows a read-only selectable URL on failure. Without JavaScript, the accordion offers manual-copy fields. CSS transitions take 200–280ms; reduced motion disables them. Keyboard expansion makes the copy controls immediately reachable.
+
+The opt-in `experience: 'food'` theme adds original SVG food illustrations and static grain, with six decorations drifting down the desktop edges on 16–22 second CSS loops. Mobile shows three small accents clipped to the logo gutters. All decorations ignore pointer input and remain clear of the links. A native checkbox pauses motion without JavaScript, and reduced motion shows a static composition. All new SVGs total less than 12KB uncompressed; no dependencies were added.
 
 Brand configuration, CSS variables and components retain the multi-brand architecture. Presentation lives in `src/app/brand-experience.css`; shared 404 and staff utility styles live in `globals.css`. The staff QR route and generation functions remain independent of the customer hub.
 
-Browser QA covers 360, 390, 430, 768 and 1280px, axe WCAG A/AA checks, keyboard navigation, reduced motion, logo loading/fallback, clipboard success/failure, direct navigation without JavaScript, server redirects, staff downloads and 404s. Third-party targets are intercepted for hub navigation; deep links are verified through their exact server Location headers without following them.
+Browser QA covers 360, 390, 430, 768 and 1280px, axe WCAG A/AA checks, keyboard navigation, reduced motion, logo loading/fallback, clipboard success/failure, direct navigation without JavaScript, server redirects, staff downloads and 404s, plus animation-phase clipping, unobstructed hit targets and the pause control. Third-party targets are intercepted for hub navigation; deep links are verified through their exact server Location headers without following them.
 
 ## Deployment notes — not deployed
 
@@ -107,6 +113,8 @@ playwright.config.ts
 tsconfig.json
 public/brands/mozza-italia/README.md
 public/brands/mozza-italia/logo.png
+public/brands/mozza-italia/food/
+public/icons/
 src/
   app/
     layout.tsx
@@ -128,6 +136,7 @@ src/
     CopyLinks.tsx
     DestinationCard.tsx
     Footer.tsx
+    FoodDecorations.tsx
     Icon.tsx
     QRCodeCard.tsx
   config/brands.ts

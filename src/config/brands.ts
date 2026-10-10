@@ -1,6 +1,6 @@
 export type Destination = {
   id: string;
-  kind: 'website' | 'instagram' | 'review';
+  kind: 'website' | 'instagram' | 'review' | 'whatsapp';
   title: string;
   description: string;
   url: string;
@@ -13,6 +13,7 @@ export type Brand = {
   name: string;
   tagline: string;
   logo: string;
+  experience?: 'food';
   copy: {
     brandLine: string;
     heading: string;
@@ -37,6 +38,7 @@ export const brands: Brand[] = [
     name: 'Mozza Italia',
     tagline: 'Taste Brings People Together',
     logo: '/brands/mozza-italia/logo.png',
+    experience: 'food',
     copy: {
       brandLine: 'A LITTLE TASTE OF ITALY',
       heading: 'MORE MOZZA.\nONE TAP AWAY.',
@@ -55,6 +57,15 @@ export const brands: Brand[] = [
     },
     links: [
       {
+        id: 'review',
+        kind: 'review',
+        title: 'Google Reviews',
+        description: 'Tell us about your visit',
+        url: 'https://g.page/r/CbxmdpzE3rO4EBM/review',
+        cta: 'Leave a Google Review',
+        cardCta: 'Leave a Review',
+      },
+      {
         id: 'website',
         kind: 'website',
         title: 'Website',
@@ -67,20 +78,21 @@ export const brands: Brand[] = [
         id: 'instagram',
         kind: 'instagram',
         title: 'Instagram',
-        description: '@italia.mozza',
+        description: 'Get updates, offers & coupons',
         handle: '@italia.mozza',
         url: 'https://www.instagram.com/italia.mozza/',
         cta: 'Open Instagram',
         cardCta: 'Open Instagram',
       },
       {
-        id: 'review',
-        kind: 'review',
-        title: 'Google Reviews',
-        description: 'Tell us about your visit',
-        url: 'https://g.page/r/CbxmdpzE3rO4EBM/review',
-        cta: 'Leave a Google Review',
-        cardCta: 'Leave a Review',
+        id: 'whatsapp',
+        kind: 'whatsapp',
+        title: 'WhatsApp',
+        // Official contact number verified on mozzaitalia.com. Fee policy is unverified.
+        description: 'Order directly with our team',
+        url: 'https://wa.me/919949799488?text=Hi%20Mozza%20Italia%2C%20I%20would%20like%20to%20place%20an%20order.',
+        cta: 'Order on WhatsApp',
+        cardCta: 'Open WhatsApp',
       },
     ],
   },

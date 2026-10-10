@@ -1,0 +1,1 @@
+Local SVG platform marks for their corresponding destination links: the recognizable four-color Google G, Instagram gradient camera, and WhatsApp phone/chat mark. Brand marks identify their respective services; they are not Mozza Italia logos. The warm globe is original vector artwork. No external image requests or icon-library dependency are required.

@@ -11,9 +11,10 @@ import {
 import { qrDataUrl } from '../src/lib/qr';
 import { hubPath, siteSettings } from '../src/lib/site';
 const expected = [
+  'https://g.page/r/CbxmdpzE3rO4EBM/review',
   'https://www.mozzaitalia.com',
   'https://www.instagram.com/italia.mozza/',
-  'https://g.page/r/CbxmdpzE3rO4EBM/review',
+  'https://wa.me/919949799488?text=Hi%20Mozza%20Italia%2C%20I%20would%20like%20to%20place%20an%20order.',
 ];
 test('brand has required values and exact approved URLs', () => {
   validateBrands(brands);
@@ -24,6 +25,16 @@ test('brand has required values and exact approved URLs', () => {
   assert.deepEqual(
     brand.links.map((link) => link.url),
     expected,
+  );
+  assert.deepEqual(
+    brand.links.map((link) => link.kind),
+    ['review', 'website', 'instagram', 'whatsapp'],
+  );
+  const whatsapp = new URL(brand.links[3].url);
+  assert.equal(whatsapp.pathname, '/919949799488');
+  assert.equal(
+    whatsapp.searchParams.get('text'),
+    'Hi Mozza Italia, I would like to place an order.',
   );
   assert.equal(hubPath(brand.slug), '/mozza-italia');
 });

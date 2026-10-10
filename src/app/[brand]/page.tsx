@@ -16,7 +16,7 @@ export async function generateMetadata({
   const brand = getBrand((await params).brand);
   if (!brand) return {};
   const title = `${brand.name} | Quick Links`;
-  const description = `Visit ${brand.name} online, follow us on Instagram or leave a Google review.`;
+  const description = `Your favourite ${brand.name} links: reviews, our website, Instagram and direct ordering.`;
   return {
     title,
     description,

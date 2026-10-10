@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="bun" x1="85" y1="32" x2="110" y2="108" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE3A4"/><stop offset=".4" stop-color="#EBB163"/><stop offset=".85" stop-color="#D78C3C"/><stop offset="1" stop-color="#B76B2B"/></linearGradient>
+    <linearGradient id="base" x1="90" y1="140" x2="100" y2="170" gradientUnits="userSpaceOnUse"><stop stop-color="#F7C37A"/><stop offset="1" stop-color="#C77D37"/></linearGradient>
+    <linearGradient id="meat" x2="0" y2="1"><stop stop-color="#8B4B2E"/><stop offset="1" stop-color="#4D2D22"/></linearGradient>
+    <linearGradient id="cheese" x2="0" y2="1"><stop stop-color="#FFE888"/><stop offset="1" stop-color="#F3AD2A"/></linearGradient>
+  </defs>
+  <path d="M28 139q70-13 144 0l-4 18c-12 23-127 23-138-1Z" fill="url(#base)"/>
+  <path d="M36 153q65 17 128-1" stroke="#FFE0A0" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+  <path d="M25 123q20-8 33-3l27-3 35 2 28-1q21-2 27 12c3 10-6 18-18 17l-25 1-20-1-30 2-25-3-22 1q-17-2-14-15Z" fill="url(#meat)"/>
+  <g stroke="#B16A3E" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="m35 135 9 2m13-5 9 2m15 4 10-1m17 0 10-3m19 4 10-2m10-5 7 2"/></g>
+  <path d="m28 113 74-8 72 9-19 8-21 17-27-15-23 9-15-12-26 4Z" fill="url(#cheese)"/>
+  <path d="M27 105q74-10 146-1l-1 10q-73 12-144 0Z" fill="#C73C2B"/>
+  <path d="M33 105q67-8 133 1" stroke="#FF8461" stroke-width="4" stroke-linecap="round"/>
+  <path d="M23 93q7-9 15-2 8-12 18-4 7-9 18-1 8-10 17-2 9-9 18 0 10-10 18-1 11-6 18 3 10-6 17 2 14-3 17 6l-4 10q-12-5-23 2-10-7-17 1-8-6-17 0-8-7-17 0-10-6-20 0-12-8-22-1-9-6-21 0-9-6-16-2Z" fill="#569544"/>
+  <path d="M31 94q10 7 20 0t20 1 19 0 22 1 21-1 21 1 18-2" stroke="#A7C862" stroke-width="5" stroke-linecap="round"/>
+  <path d="M26 84c3-33 32-52 73-52 40 0 70 19 75 52 3 14-148 15-148 0Z" fill="url(#bun)"/>
+  <path d="M40 65c15-25 58-31 89-20" stroke="#FFE6B2" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+  <g fill="#FFF0C5"><ellipse cx="66" cy="54" rx="4" ry="1.7" transform="rotate(-22 66 54)"/><ellipse cx="96" cy="46" rx="4" ry="1.8" transform="rotate(13 96 46)"/><ellipse cx="124" cy="57" rx="4" ry="1.7" transform="rotate(-24 124 57)"/><ellipse cx="84" cy="70" rx="4" ry="1.7" transform="rotate(25 84 70)"/><ellipse cx="142" cy="74" rx="4" ry="1.7" transform="rotate(25 142 74)"/><ellipse cx="52" cy="76" rx="4" ry="1.7"/><ellipse cx="109" cy="79" rx="4" ry="1.7" transform="rotate(-24 109 79)"/></g>
+</svg>

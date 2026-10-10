@@ -1,19 +1,39 @@
-/* Reusable restaurant theme. Shared staff and error-page styles live in globals.css. */
+/* Shared quick-link layout. The opt-in food theme keeps restaurant scenery isolated. */
 .brand-shell {
+  position: relative;
+  isolation: isolate;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: max(32px, env(safe-area-inset-top))
-    max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom))
+  padding: max(24px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom))
     max(20px, env(safe-area-inset-left));
   color: var(--ink);
-  background:
-    radial-gradient(ellipse at 50% 0%, #f7e7e53d, transparent 55%),
-    var(--brand-cream);
+  background: var(--brand-cream);
   font-family: var(--font-ui), sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+.brand-shell[data-experience='food'] {
+  --food-tomato: #c44730;
+  --food-mango: #f5bc43;
+  --food-basil: #34734d;
+  background:
+    radial-gradient(ellipse at 0% 8%, #ffe1b5a8, transparent 48%),
+    radial-gradient(ellipse at 100% 25%, #f0ddf58c, transparent 44%),
+    radial-gradient(ellipse at 8% 100%, #e5ecc587, transparent 50%),
+    radial-gradient(ellipse at 95% 100%, #ffd9b778, transparent 48%), #fffcf5;
+}
+.brand-shell[data-experience='food']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/brands/mozza-italia/food/grain.svg') repeat;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
 }
 .brand-shell :is(a, button, input, summary):focus-visible {
   outline: 2px solid var(--brand-red);
@@ -24,16 +44,18 @@
   background: var(--brand-red);
 }
 .brand-main {
+  position: relative;
   width: 100%;
-  max-width: 520px;
-  animation: hub-arrive 260ms ease-out;
+  max-width: 500px;
 }
 .brand-header {
   text-align: center;
+  mix-blend-mode: multiply;
+  animation: hub-arrive 260ms ease-out both;
 }
 .brand-identity {
   position: relative;
-  width: 220px;
+  width: 196px;
   max-width: 100%;
   aspect-ratio: 3557 / 1445;
   margin-inline: auto;
@@ -68,9 +90,9 @@
 }
 .tricolore {
   display: flex;
-  width: 42px;
+  width: 36px;
   height: 3px;
-  margin: 22px auto 26px;
+  margin: 15px auto 21px;
   border-radius: 2px;
   overflow: hidden;
 }
@@ -79,79 +101,129 @@
   background: var(--brand-green);
 }
 .tricolore i:nth-child(2) {
-  background: var(--border);
+  background: #efd8ac;
 }
 .tricolore i:nth-child(3) {
   background: var(--brand-red);
 }
 .section-heading {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 25px;
+  animation: hub-arrive 280ms 60ms ease-out both;
 }
 .section-heading h1 {
-  color: var(--ink);
+  color: var(--brand-green);
   font-family: var(--font-display), sans-serif;
   font-weight: 700;
-  font-size: clamp(56px, 14vw, 72px);
-  line-height: 0.96;
+  font-size: clamp(54px, 13.8vw, 70px);
+  line-height: 0.98;
   letter-spacing: -0.025em;
 }
 .section-heading h1 span {
   display: block;
 }
 .section-heading h1 span:first-child {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto 5px;
   color: var(--brand-red);
+  transform: rotate(-1.5deg);
+}
+[data-experience='food'] .section-heading h1 span:first-child::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  height: 9px;
+  left: 7%;
+  right: 5%;
+  bottom: 1px;
+  border-radius: 50% 30% 45% 35%;
+  background: #f8c75a73;
+  transform: rotate(-1deg);
 }
 .section-heading p {
-  margin-top: 16px;
+  margin-top: 14px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
   text-wrap: balance;
 }
 .destination-list {
   display: grid;
-  gap: 12px;
+  gap: 11px;
+  animation: hub-arrive 280ms 100ms ease-out both;
 }
 .destination-card {
+  --row-accent: #c44730;
+  --row-soft: #fff0e7;
+  --row-line: #efdfd2;
+  position: relative;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 20px;
+  grid-template-columns: 44px minmax(0, 1fr) 28px;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   min-height: 78px;
-  padding: 14px 18px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 3px 12px #261f1705;
+  padding: 13px 15px;
+  border: 1px solid var(--row-line);
+  border-radius: 19px;
+  background: linear-gradient(110deg, var(--row-soft), #fffdfbf5 60%);
+  box-shadow:
+    0 2px 3px #54381503,
+    0 6px 19px #54381508,
+    inset 0 1px 0 #ffffffc9;
   transition:
     transform 220ms ease,
     border-color 220ms ease,
     box-shadow 220ms ease,
     background-color 220ms ease;
 }
+.destination-card.review {
+  --row-accent: #9a660f;
+  --row-soft: #fff0c3;
+  --row-line: #ecd9a6;
+  box-shadow:
+    0 5px 20px #c5992020,
+    inset 0 1px 0 #fffdf5;
+}
+.destination-card.instagram {
+  --row-accent: #9950a6;
+  --row-soft: #f3eaff;
+  --row-line: #e7daee;
+}
+.destination-card.whatsapp {
+  --row-accent: #28744a;
+  --row-soft: #eaf5e9;
+  --row-line: #d7e5d4;
+}
 .icon-badge {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
-  color: var(--brand-green);
-  background: var(--surface-alt);
+  border-radius: 14px;
+  background: #ffffffd6;
+  box-shadow:
+    0 2px 6px #41342508,
+    inset 0 1px 0 white;
+  transition: transform 220ms ease;
 }
-.website .icon-badge {
-  color: var(--brand-red);
-  background: var(--brand-soft-red);
-}
-.icon-badge svg {
-  width: 22px;
-  height: 22px;
+.icon-badge img {
+  display: block;
+  width: 30px;
+  height: 30px;
 }
 .card-copy h2 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   color: var(--ink);
   font-size: 15px;
   line-height: 1.4;
   font-weight: 600;
+}
+.review-star {
+  color: #b17917;
+  flex: none;
 }
 .card-copy p {
   margin-top: 3px;
@@ -160,16 +232,75 @@
   line-height: 1.5;
 }
 .link-arrow {
-  color: var(--brand-red);
+  padding: 5px;
+  border-radius: 50%;
+  background: var(--row-soft);
+  color: var(--row-accent);
   transition:
     transform 220ms ease,
-    color 220ms ease;
+    background-color 220ms ease;
 }
 .destination-card:active {
-  background: var(--surface-alt);
+  transform: scale(0.99);
+  background: var(--row-soft);
+}
+
+/* The desktop rails stay outside the content column at every animation phase. */
+.food-scene {
+  --travel: calc(100svh + 400px);
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.food-piece {
+  --size: min(var(--food-size), calc((100vw - 620px) / 2));
+  position: absolute;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  transform: translate3d(0, var(--rest-y), 0) rotate(var(--tilt));
+  animation: food-fall var(--float-duration) var(--float-delay) linear infinite;
+  filter: drop-shadow(0 12px 10px #7953271c) drop-shadow(0 3px 2px #7953270e);
+}
+.food-left {
+  left: calc((100vw - 520px) / 4 - var(--size) / 2);
+}
+.food-right {
+  right: calc((100vw - 520px) / 4 - var(--size) / 2);
+}
+.food-piece img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.motion-control {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 4px 8px;
+  color: var(--muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+.motion-control input {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  accent-color: var(--brand-green);
+  cursor: pointer;
+}
+.brand-shell:has(.motion-control input:checked) .food-piece {
+  animation-play-state: paused;
 }
 .copy-links {
-  margin-top: 24px;
+  margin-top: 20px;
   border-top: 1px solid var(--border);
   color: var(--muted);
 }
@@ -178,7 +309,7 @@
   justify-content: center;
   align-items: center;
   gap: 9px;
-  min-height: 60px;
+  min-height: 52px;
   padding: 12px 4px;
   font-size: 12px;
   line-height: 1.5;
@@ -268,9 +399,11 @@
   border: 0;
 }
 .hub-footer {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 520px;
-  margin-top: 16px;
+  margin-top: 4px;
   color: var(--muted);
   font-size: 11px;
   line-height: 1.5;
@@ -290,12 +423,16 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .destination-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--brand-red);
-    box-shadow: 0 8px 24px #261f1709;
+    transform: translateY(-3px);
+    border-color: var(--row-accent);
+    box-shadow:
+      0 10px 25px #54381512,
+      inset 0 1px 0 white;
+  }
+  .destination-card:hover .icon-badge {
+    transform: rotate(-5deg) scale(1.06);
   }
   .destination-card:hover .link-arrow {
-    color: var(--brand-dark-red);
     transform: translate(2px, -2px);
   }
   .copy-links summary:hover,
@@ -304,26 +441,66 @@
   }
   .copy-button:hover {
     color: var(--brand-green);
-    background: var(--surface-alt);
+    background: #ffffff90;
   }
 }
 @media (min-width: 768px) {
   .brand-shell {
-    padding-top: max(48px, env(safe-area-inset-top));
-    padding-bottom: max(32px, env(safe-area-inset-bottom));
+    padding-top: max(40px, env(safe-area-inset-top));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
   }
   .brand-identity {
-    width: 240px;
+    width: 216px;
   }
   .section-heading {
-    margin-bottom: 32px;
+    margin-bottom: 28px;
+  }
+  .section-heading p {
+    font-size: 14px;
   }
   .destination-card {
-    padding-inline: 20px;
-    gap: 16px;
+    padding-inline: 18px;
+    gap: 14px;
   }
 }
-/* Native details keeps keyboard and no-JavaScript behavior. Animate only when supported. */
+@media (max-width: 767px) {
+  /* Only three small accents in the logo's outer gutters; never behind the links or heading. */
+  .food-scene {
+    position: absolute;
+    bottom: auto;
+    height: 132px;
+    --travel: 330px;
+    mask-image: linear-gradient(#000 65%, transparent);
+  }
+  .food-piece {
+    display: none;
+    --size: 62px;
+    transform: translate3d(0, var(--mobile-rest, 25px), 0) rotate(var(--tilt));
+  }
+  .food-1 {
+    display: block;
+    left: -9px;
+    right: auto;
+    animation-delay: -15s;
+  }
+  .food-4 {
+    display: block;
+    right: -9px;
+    left: auto;
+    --size: 58px;
+    --mobile-rest: 42px;
+    animation-delay: -17s;
+  }
+  .food-6 {
+    display: block;
+    left: 7px;
+    right: auto;
+    --size: 30px;
+    --mobile-rest: 95px;
+    animation-delay: -12s;
+  }
+}
+/* Native details retains keyboard and no-JavaScript behavior. */
 @supports (interpolate-size: allow-keywords) and
   selector(details::details-content) {
   .copy-links {
@@ -339,16 +516,14 @@
   .copy-links[open]::details-content {
     height: auto;
   }
-
-  /* Make the contents immediately reachable when opening with the keyboard. */
   .copy-links:has(summary:focus-visible)::details-content {
     transition: none;
   }
 }
 @keyframes hub-arrive {
   from {
-    opacity: 0.6;
-    transform: translateY(5px);
+    opacity: 0.72;
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -365,16 +540,50 @@
     transform: translateY(0);
   }
 }
+@keyframes food-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -200px, 0) rotate(calc(var(--tilt) - 8deg));
+  }
+  8%,
+  92% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate3d(12px, calc(var(--travel) * 0.25 - 200px), 0)
+      rotate(calc(var(--tilt) + 5deg));
+  }
+  50% {
+    transform: translate3d(-8px, calc(var(--travel) * 0.5 - 200px), 0)
+      rotate(calc(var(--tilt) - 4deg));
+  }
+  75% {
+    transform: translate3d(10px, calc(var(--travel) * 0.75 - 200px), 0)
+      rotate(calc(var(--tilt) + 6deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, calc(var(--travel) - 200px), 0)
+      rotate(var(--tilt));
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .destination-card:hover,
-  .destination-card:hover .link-arrow {
+  .destination-card:active,
+  .destination-card:hover .link-arrow,
+  .destination-card:hover .icon-badge {
     transform: none;
+  }
+  .motion-control {
+    display: none;
   }
 }
 @media print {
   .brand-shell {
     background: white;
   }
+  .food-scene,
+  .motion-control,
   .copy-links,
   .hub-footer {
     display: none;

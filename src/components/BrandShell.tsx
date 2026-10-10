@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Brand } from '@/config/brands';
 import { Footer } from './Footer';
 import { displayFont, uiFont } from '@/app/fonts';
+import { FoodDecorations } from './FoodDecorations';
 export function BrandShell({
   brand,
   children,
@@ -12,6 +13,7 @@ export function BrandShell({
   return (
     <div
       className={`brand-shell ${displayFont.variable} ${uiFont.variable}`}
+      data-experience={brand.experience}
       style={
         {
           '--brand-red': brand.theme.red,
@@ -26,10 +28,17 @@ export function BrandShell({
         } as CSSProperties
       }
     >
+      {brand.experience === 'food' && <FoodDecorations />}
       <main id="main" className="brand-main">
         {children}
       </main>
       <Footer compact />
+      {brand.experience === 'food' && (
+        <label className="motion-control">
+          <input type="checkbox" aria-label="Pause background animation" />
+          <span>Pause the float</span>
+        </label>
+      )}
     </div>
   );
 }

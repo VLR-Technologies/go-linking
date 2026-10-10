@@ -7,7 +7,7 @@ export function CopyLinks({ links }: { links: Destination[] }) {
     <details className="copy-links">
       <summary>
         <CopyIcon />
-        <span>Need a link? Copy it here</span>
+        <span>Need the link? Copy it here</span>
         <svg
           className="copy-chevron"
           width="16"
