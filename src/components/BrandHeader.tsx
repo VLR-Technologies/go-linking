@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { useCallback, useState } from 'react';
 import type { Brand } from '@/config/brands';
@@ -7,11 +8,19 @@ export function BrandHeader({ brand }: { brand: Brand }) {
   const attachLogo = useCallback((image: HTMLImageElement | null) => {
     if (image?.complete && image.naturalWidth === 0) setFailed(true);
   }, []);
+  if (brand.experience !== 'food')
+    return (
+      <header className="client-header">
+        <img src={brand.logo} alt="" width="64" height="64" />
+        <p className="eyebrow">{brand.category}</p>
+        <p className="client-name">{brand.name}</p>
+        <p>{brand.tagline}</p>
+      </header>
+    );
   return (
     <header className="brand-header">
       <div className="brand-identity">
         {/* Visible in server HTML, including when JavaScript is disabled. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={attachLogo}
           className="brand-logo"

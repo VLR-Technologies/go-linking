@@ -1,24 +1,12 @@
 import { test, expect } from '@playwright/test';
-
-test('root returns a server redirect without the former landing page', async ({
-  request,
-  page,
-}) => {
+import { brands } from '../../src/config/brands';
+test('root serves the VLR client directory', async ({ request, page }) => {
   const response = await request.get('/', { maxRedirects: 0 });
-  expect(response.status()).toBe(307);
-  expect(response.headers().location).toBe('/mozza-italia');
-  const body = await response.text();
-  for (const oldCopy of [
-    'VLR TECHNOLOGIES PRESENTS',
-    'View Mozza Italia Demo',
-    'MADE FOR REAL-WORLD CONNECTIONS',
-  ]) {
-    expect(body).not.toContain(oldCopy);
-  }
-
+  expect(response.status()).toBe(200);
   await page.goto('/');
-  await expect(page).toHaveURL('/mozza-italia');
-  await expect(page.getByTestId('brand-intro')).toHaveCount(0);
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.locator('.destination-card')).toHaveCount(4);
+  await expect(page.locator('.company-card')).toHaveCount(3);
+  for (const brand of brands)
+    await expect(
+      page.getByRole('link', { name: `Open ${brand.name}`, exact: true }),
+    ).toHaveAttribute('href', `/${brand.slug}`);
 });

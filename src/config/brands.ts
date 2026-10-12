@@ -1,102 +1,24 @@
-export type Destination = {
-  id: string;
-  kind: 'website' | 'instagram' | 'review' | 'whatsapp';
-  title: string;
-  description: string;
-  url: string;
-  cta: string;
-  cardCta: string;
-  handle?: string;
-};
-export type Brand = {
-  slug: string;
-  name: string;
-  tagline: string;
-  logo: string;
-  experience?: 'food';
-  copy: {
-    brandLine: string;
-    heading: string;
-    description: string;
-  };
-  theme: {
-    red: string;
-    darkRed: string;
-    softRed: string;
-    green: string;
-    cream: string;
-    ink: string;
-    muted: string;
-    surfaceAlt: string;
-    border: string;
-  };
-  links: Destination[];
-};
-export const brands: Brand[] = [
-  {
-    slug: 'mozza-italia',
-    name: 'Mozza Italia',
-    tagline: 'Taste Brings People Together',
-    logo: '/brands/mozza-italia/logo.png',
-    experience: 'food',
-    copy: {
-      brandLine: 'A LITTLE TASTE OF ITALY',
-      heading: 'MORE MOZZA.\nONE TAP AWAY.',
-      description: 'Your favourite links, all in one place.',
-    },
-    theme: {
-      red: '#A50F16',
-      darkRed: '#7E0B10',
-      softRed: '#F7E7E5',
-      green: '#173D32',
-      cream: '#FFFDF9',
-      ink: '#242220',
-      muted: '#6F6B65',
-      surfaceAlt: '#F7F3EC',
-      border: '#E8E2D8',
-    },
-    links: [
-      {
-        id: 'review',
-        kind: 'review',
-        title: 'Google Reviews',
-        description: 'Tell us about your visit',
-        url: 'https://g.page/r/CbxmdpzE3rO4EBM/review',
-        cta: 'Leave a Google Review',
-        cardCta: 'Leave a Review',
-      },
-      {
-        id: 'website',
-        kind: 'website',
-        title: 'Website',
-        description: 'Discover our menu & more',
-        url: 'https://www.mozzaitalia.com',
-        cta: 'Open Website',
-        cardCta: 'Visit Website',
-      },
-      {
-        id: 'instagram',
-        kind: 'instagram',
-        title: 'Instagram',
-        description: 'Get updates, offers & coupons',
-        handle: '@italia.mozza',
-        url: 'https://www.instagram.com/italia.mozza/',
-        cta: 'Open Instagram',
-        cardCta: 'Open Instagram',
-      },
-      {
-        id: 'whatsapp',
-        kind: 'whatsapp',
-        title: 'WhatsApp',
-        // Official contact number verified on mozzaitalia.com. Fee policy is unverified.
-        description: 'Order directly with our team',
-        url: 'https://wa.me/919949799488?text=Hi%20Mozza%20Italia%2C%20I%20would%20like%20to%20place%20an%20order.',
-        cta: 'Order on WhatsApp',
-        cardCta: 'Open WhatsApp',
-      },
-    ],
-  },
-];
+import type { Brand, Destination } from './brands/types';
+import { mozzaItalia } from './brands/mozza-italia';
+import { elevatorCompany } from './brands/elevator-company';
+import { tuitionClasses } from './brands/tuition-classes';
+export type { Brand, Destination } from './brands/types';
+export const brands: Brand[] = [mozzaItalia, elevatorCompany, tuitionClasses];
+export function isUsableDestination(link: Destination) {
+  if (link.disabled || !link.url) return false;
+  try {
+    const url = new URL(link.url);
+    return (
+      !url.username &&
+      !url.password &&
+      (url.protocol === 'https:' ||
+        (url.protocol === 'tel:' &&
+          /^tel:\+?[0-9][0-9 ()-]{4,}$/.test(link.url)))
+    );
+  } catch {
+    return false;
+  }
+}
 export function validateBrands(items: Brand[]) {
   const slugs = new Set<string>();
   for (const brand of items) {
@@ -105,7 +27,7 @@ export function validateBrands(items: Brand[]) {
       slugs.has(brand.slug) ||
       !brand.name.trim() ||
       !brand.tagline.trim() ||
-      !brand.links.length ||
+      !brand.category.trim() ||
       !brand.logo.startsWith('/brands/')
     )
       throw new Error('Invalid brand configuration');
@@ -116,11 +38,8 @@ export function validateBrands(items: Brand[]) {
       throw new Error('Invalid brand theme');
     const ids = new Set<string>();
     for (const link of brand.links) {
-      const url = new URL(link.url);
       if (
-        url.protocol !== 'https:' ||
-        url.username ||
-        url.password ||
+        (!link.disabled && Boolean(link.url) && !isUsableDestination(link)) ||
         !/^[a-z0-9-]+$/.test(link.id) ||
         ids.has(link.id) ||
         !link.title ||
@@ -132,8 +51,9 @@ export function validateBrands(items: Brand[]) {
     }
   }
 }
+
 validateBrands(brands);
 export const getBrand = (slug: string) =>
   brands.find((brand) => brand.slug === slug);
 export const getDestination = (brand: Brand, id: string) =>
-  brand.links.find((link) => link.id === id);
+  brand.links.find((link) => link.id === id && isUsableDestination(link));
