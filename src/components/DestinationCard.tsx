@@ -1,13 +1,28 @@
+import { LinkActions } from './LinkActions';
 import type { Destination } from '@/config/brands';
+import { isUsableDestination } from '@/config/brands';
+import type { CSSProperties } from 'react';
 import { Icon } from './Icon';
-export function DestinationCard({ destination }: { destination: Destination }) {
+export function DestinationCard({
+  destination,
+  logo,
+  themedIcons = false,
+  index = 0,
+}: {
+  destination: Destination;
+  logo?: string;
+  themedIcons?: boolean;
+  index?: number;
+}) {
+  const usable = isUsableDestination(destination);
   return (
-    <a
+    <article
       className={`destination-card ${destination.kind}`}
-      href={destination.url}
+      data-disabled={!usable || undefined}
+      style={{ '--card-index': index } as CSSProperties}
     >
       <span className="icon-badge">
-        <Icon kind={destination.kind} />
+        <Icon kind={destination.kind} monochrome={themedIcons} />
       </span>
       <div className="card-copy">
         <h2>
@@ -29,20 +44,38 @@ export function DestinationCard({ destination }: { destination: Destination }) {
         </h2>
         <p>{destination.description}</p>
       </div>
-      <svg
-        className="link-arrow"
-        width="28"
-        height="28"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M7 17 17 7M7 7h10v10" />
-      </svg>
-    </a>
+      {usable ? (
+        <div className="card-actions">
+          <LinkActions
+            url={destination.url}
+            title={destination.title}
+            logo={logo}
+            filename={`${destination.id}-qr.png`}
+          />
+          <a
+            className="card-action open-action"
+            href={destination.url}
+            aria-label={destination.cta}
+          >
+            <svg
+              className="link-arrow"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7M7 7h10v10" />
+            </svg>
+          </a>
+        </div>
+      ) : (
+        <span className="destination-pending">Coming soon</span>
+      )}
+    </article>
   );
 }

@@ -94,3 +94,31 @@ for (const url of ['http://localhost:3000/mozza-italia', ...expected]) {
       );
     });
 }
+
+test('all three brands register and placeholders expose no destinations', () => {
+  assert.deepEqual(
+    brands.map((brand) => brand.slug),
+    ['mozza-italia', 'elevator-company', 'tuition-classes'],
+  );
+  for (const brand of brands.slice(1)) {
+    assert.equal(brand.placeholder, true);
+    for (const link of brand.links) {
+      assert.equal(link.url, '');
+      assert.equal(getDestination(brand, link.id), undefined);
+    }
+  }
+});
+
+test('configured client links can be enabled while unsafe and duplicate entries are rejected', () => {
+  const items = structuredClone(brands);
+  const link = items[1].links[2];
+  link.disabled = false;
+  link.url = 'tel:+919000000000';
+  validateBrands(items);
+  assert.equal(getDestination(items[1], link.id)?.url, link.url);
+  link.url = 'javascript:alert(1)';
+  assert.throws(() => validateBrands(items));
+  link.url = '';
+  items[1].links[1].id = items[1].links[0].id;
+  assert.throws(() => validateBrands(items));
+});

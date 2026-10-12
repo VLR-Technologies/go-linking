@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-import { brands, getBrand, getDestination } from '@/config/brands';
+import {
+  brands,
+  getBrand,
+  getDestination,
+  isUsableDestination,
+} from '@/config/brands';
 type Params = Promise<{ brand: string; destination: string }>;
 export function generateStaticParams() {
   return brands.flatMap((brand) =>
-    brand.links.map((destination) => ({
+    brand.links.filter(isUsableDestination).map((destination) => ({
       brand: brand.slug,
       destination: destination.id,
     })),

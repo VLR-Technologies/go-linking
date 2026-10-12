@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getBrand } from '@/config/brands';
+import { getBrand, isUsableDestination } from '@/config/brands';
 import { masterUrl, siteSettings } from '@/lib/site';
 import { QRCodeCard } from '@/components/QRCodeCard';
 import { Footer } from '@/components/Footer';
@@ -20,7 +20,7 @@ export default async function QRAssets({
   const master = masterUrl(brand.slug);
   const assets = [
     { id: 'master', title: 'Master hub', url: master },
-    ...brand.links.map((link) => ({
+    ...brand.links.filter(isUsableDestination).map((link) => ({
       id: link.kind === 'review' ? 'google-review' : link.id,
       title: link.title,
       url: link.url,

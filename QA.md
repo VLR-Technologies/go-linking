@@ -1,46 +1,57 @@
-# Mozza Italia colorful quick-links update
+# Multi-brand UI refinement QA — 12 October 2026
+
+## Scope and repository
+
+Work stayed in `C:\Users\Jai\go-linking` on `feature/multi-company-logins`. HEAD remains `bc3326a614d05321dcbcbde85a0e4ccba3e64129`. No branch switch, commit, push, merge, deployment, dependency installation, authentication, database, admin or tracking was added. Earlier multi-brand implementation changes remain uncommitted alongside this refinement.
+
+## Files changed in this refinement
+
+- `src/app/page.tsx`: VLR directory, themed brand cards and full-card native navigation.
+- `src/app/multi-brand.css`: directory backgrounds, responsive layout, card depth, 44px directory controls, client presets, back navigation, footer and motion refinements.
+- `src/components/VlrLockup.tsx` (new): existing VLR logo plus TECHNOLOGIES, and the official tagline constant.
+- `src/components/Footer.tsx`: consistent lockup and official tagline.
+- `src/components/BrandShell.tsx`: All Brands back link.
+- `src/components/DestinationCard.tsx`: shared enabled/disabled card rendering and themed icons.
+- `src/components/Icon.tsx`: monochrome client icons while preserving Mozza platform icons.
+- `src/app/[brand]/page.tsx`: all client destinations use the shared card engine; restrained preview notice.
+- `src/config/brands/elevator-company.ts`, `tuition-classes.ts`: relevant placeholder descriptions, with URLs still empty and disabled.
+- `tests/browser/multi-brand.spec.ts`: updated placeholder, independent action and touch-target checks.
+- `tests/browser/refinement.spec.ts` (new): full-card pointer/keyboard navigation, back navigation, branding, reduced motion and Mozza fallback/proportion coverage.
+- `README.md`, `QA.md`: implementation and verification documentation.
+- `next-env.d.ts`: Next production build regenerates its types reference.
 
 ## Result
 
-The existing Next.js hub now has a warm ivory/peach/lavender background, subtle grain, original gradient-shaded SVG food illustrations, and a 500px link column. The original Mozza logo and local Barlow Condensed/Manrope fonts remain. Google Reviews leads with a warm yellow surface and small decorative star, followed by Website, Instagram and WhatsApp. All four rows navigate directly in the same tab and have matching copy controls.
+The directory uses an ice-blue/silver layered background, subtle grid, restrained orange accents, a connection illustration and individually themed client artwork. Each entire company card is a native internal link. QR and Copy are sibling buttons above the link's overlay, with independent mouse and keyboard behavior and 44×44px targets. A discovered artwork stacking issue was fixed and covered by real coordinate-click regression tests.
 
-Six food illustrations drift along the desktop edges with 16–22 second CSS animations. Mobile keeps three small accents within the logo gutters, with a soft fade at the clipping boundary. Decorations cannot intercept pointer events. A native checkbox pauses the animation without JavaScript; reduced motion keeps the food static. No new client component or dependency was added.
+VLR branding uses the existing unmodified logo followed by TECHNOLOGIES, without duplicate VLR text. The shared supporting line is ENGINEERING INTELLIGENCE FOR TOMORROW. Footers link to https://vlrtechnologies.net/.
 
-## Changed files
+All brand pages have an All Brands link, accessible as Back to Go-Linking. Elevator has charcoal/navy and silver-blue styling, a shaft reveal, rising cabin and sequential floor indicators. Tuition has deep blue/violet, white and yellow, an opening book, academic symbols and a pencil slide. Motion uses existing local SVG/CSS and respects reduced motion. Both clients use the same DestinationCard as Mozza; all 18 missing destinations show Coming soon with no actionable URL or QR.
 
-- `src/config/brands.ts`: four destinations, exact ordering/URLs, opt-in food theme, revised supporting copy.
-- `src/app/[brand]/page.tsx`: metadata includes direct ordering.
-- `src/app/brand-experience.css`: pastel surfaces, typography, platform row styling, food motion, clipping, responsive and reduced-motion behavior.
-- `src/components/BrandShell.tsx`: optional scenery and native pause control.
-- `src/components/FoodDecorations.tsx`: new server-rendered decoration component.
-- `src/components/DestinationCard.tsx`: review star and arrow styling.
-- `src/components/Icon.tsx`: local recognizable platform SVG marks.
-- `src/components/CopyLinks.tsx`: quieter copy utility heading; existing copy component reused.
-- `public/icons/`: Google, Instagram, WhatsApp and original globe SVGs, plus README.
-- `public/brands/mozza-italia/food/`: original pizza, burger, fries, basil, tomatoes and grain SVGs, plus README.
-- `src/lib/qr.ts`: compensate for a floating-point floor in the existing QR library so the longer WhatsApp payload produces an exact 1024px staff download.
-- `tests/core.test.ts`, `tests/browser/experience.spec.ts`, `tests/browser/root-redirect.spec.ts`: four-link coverage, updated ordering, decoration/pause/reduced-motion checks.
-- `README.md`, `QA.md`: current behavior, verification and local-run documentation.
-
-The ten new SVG assets total 11,754 bytes uncompressed. The logo and font files were not modified. The root redirect, existing destination redirects, footer destination, staff QR route and unknown-route behavior remain compatible.
+The existing shared QR/copy engine is retained. QRs encode exact URLs, use black on white and a four-module quiet zone, and provide 1024px PNG downloads where enabled. The modal supports focus wrapping/restoration, Escape and Close. Copy preserves the current page, announces success with a fixed 1.8-second toast and supplies a manual fallback if clipboard access fails. Master downloads remain protected on local/preview origins.
 
 ## Verification
 
-- Lint, TypeScript and production build: passed.
-- Core suite (`node --import tsx --test tests/core.test.ts`): 24 passed. Exact approved URLs and WhatsApp message verified; all five staff QR payloads independently decoded at 200, 250, 300 and 1024px.
-- Full browser suite: 20 passed using installed Chrome on port 3102. The 11 cases affected by final visual refinements also passed on a focused rerun.
-- Widths checked: 360, 390, 430, 768 and 1280px. All four compact rows fit within the initial viewport, with aligned columns and no horizontal overflow.
-- Axe WCAG A/AA checks passed for collapsed and expanded hubs, copy-failure states and the staff utility.
-- Verified same-tab direct navigation and exact URL copying for all four destinations, clipboard success/reset and failures, keyboard navigation, no-JavaScript links/manual copying/motion pause, reduced motion, logo fallback, root/deep-link redirects, 404s, staff downloads and preview-master protection.
-- Food placement was checked at multiple animation phases at 360, 430, 768 and 1280px. Decorations remain outside protected content, links retain unobstructed hit targets, and static decorations remain visible with reduced motion.
-- Mobile and desktop screenshots were visually reviewed. The suite writes viewport screenshots to ignored `test-results/hub-{width}.png`; focused reruns retain the selected cases. The final 360px clipping-fade check also passed.
+| Check                                      | Result                                                                                                                                                |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit/configuration/independent QR decoding | 26 passed                                                                                                                                             |
+| Full browser suite                         | 44 passed in one final run                                                                                                                            |
+| Lint                                       | Passed                                                                                                                                                |
+| TypeScript                                 | Passed                                                                                                                                                |
+| Production build                           | Passed; all three client routes generated                                                                                                             |
+| Responsive layout                          | All four pages at 390, 430, 768, 1024, 1280 and 1440px; no horizontal overflow                                                                        |
+| Accessibility                              | No axe WCAG 2 A/AA and 2.1 AA violations in tested pages/dialogs; keyboard actions, modal focus, reduced motion and fallback checks passed            |
+| Navigation                                 | Entire artwork/text/card areas, arrows, keyboard Enter, back links, independent QR/Copy, same-tab operation without JavaScript, invalid routes passed |
+| Original food motion                       | Existing clipping, pause and placement tests passed                                                                                                   |
 
-The first core run exposed an existing QR renderer rounding issue (1023 rather than 1024 pixels) for the newly added WhatsApp URL. The generator was corrected and all 24 tests passed afterward.
+Tests used installed Microsoft Edge on Windows. Final screenshots of the directory, Mozza, Elevator, Tuition, QR modal and footer were visually inspected at 390, 430, 768, 1280 and 1440px. Automated responsive checks also cover 1024px. Final directory screenshots are under ignored `test-results/`; detailed before/after captures are under ignored `.npm-cache/ui-refinement/`.
 
-## Limitations and local use
+## Mozza regression comparison
 
-The [official website](https://www.mozzaitalia.com) confirms +91 99497 99488. A no-platform-fees policy was not found, so the public description is “Order directly with our team.” No fee, delivery or free-food promise is made.
+The baseline for this refinement was the existing multi-brand implementation before these UI edits. Across all six widths, measured main, logo, heading, destination-card and footer geometry remained identical; sampled fonts, backgrounds and padding also matched. Cards remain 78px high. The original food stylesheet, decorative assets, logo and exact destination URLs were preserved. Only the requested back navigation and footer branding/tagline were added to Mozza in this pass.
 
-Next.js emits a non-blocking warning about an ignored parent-directory lockfile. Physical-device and native WhatsApp/Instagram handoff testing were not performed. External navigation is intercepted in browser tests; no messages or reviews were submitted.
+Visual inspection confirmed the composition and footer placement remain unchanged. Desktop composition crops matched pixel-for-pixel in repeat comparisons. Mobile captures showed some image/text rasterization variation despite identical measurements, so an all-width pixel-perfect result is not claimed.
 
-Run `npm run dev` and open `http://localhost:3000/mozza-italia` (the root also redirects there). For production browser QA: `npm run build`, then `PLAYWRIGHT_PORT=3102 PLAYWRIGHT_CHANNEL=chrome npm run test:e2e`. No push or deployment was performed.
+## Remaining inputs and limits
+
+Elevator and Tuition still need real names, logos, approved copy, contact details and destination URLs. Their current symbols and identities are clearly marked client previews. The actual live HTTPS origin must be configured and rebuilt before production master QR printing. Physical iOS/Android devices, printed QR/NFC scans and screen-reader devices were not tested. The public, configuration-driven architecture remains; client four needs a configuration, assets, links and theme rather than a separate application.
