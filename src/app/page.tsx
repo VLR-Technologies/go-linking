@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { brands } from '@/config/brands';
@@ -5,12 +6,22 @@ import { masterUrl, siteSettings } from '@/lib/site';
 import { LinkActions } from '@/components/LinkActions';
 import { Footer } from '@/components/Footer';
 import { VlrLockup, vlrTagline } from '@/components/VlrLockup';
-import { uiFont } from './fonts';
+import { ConnectedHero } from '@/components/directory/ConnectedHero';
+import { displayFont, uiFont } from './fonts';
+import './directory-experience.css';
+
+export const metadata: Metadata = {
+  title: 'Go-Linking — One Link. Infinite Connections. | VLR Technologies',
+  description:
+    'Discover partner brands and their digital destinations with Go-Linking, the digital connection hub by VLR Technologies. Explore, scan a QR, or share a brand link.',
+};
 
 export default function Home() {
   return (
-    <div className={`directory-shell ${uiFont.variable}`}>
-      <main id="main" className="directory-main">
+    <div
+      className={`directory-shell ${uiFont.variable} ${displayFont.variable}`}
+    >
+      <main id="main" className="directory-main" tabIndex={-1}>
         <header className="directory-header">
           <div className="directory-brand">
             <a
@@ -22,141 +33,139 @@ export default function Home() {
             <p className="vlr-tagline">{vlrTagline}</p>
           </div>
           <span className="partner-label">
-            <i aria-hidden="true" />
-            PARTNER CONNECTIONS
+            <i aria-hidden="true" /> THE CONNECTION HUB
           </span>
         </header>
-        <section className="directory-intro">
-          <div>
-            <p className="eyebrow">
-              <span aria-hidden="true" />
-              ONE CONNECTION. EVERY POSSIBILITY.
-            </p>
-            <h1>
-              GO-LINKING<span aria-hidden="true">.</span>
-            </h1>
-            <p className="directory-subtitle">
-              One connection. Every brand within reach.
-            </p>
+        <ConnectedHero />
+        <div className="network-story">
+          <p>
+            From one connection to <strong>endless possibilities.</strong>
+          </p>
+          <div className="story-stages" aria-label="Discover, connect, explore">
+            <span>Discover</span>
+            <span className="story-line" aria-hidden="true" />
+            <span>Connect</span>
+            <span className="story-line" aria-hidden="true" />
+            <span>
+              Explore <span aria-hidden="true">↘</span>
+            </span>
           </div>
-          <svg
-            className="connection-art"
-            viewBox="0 0 240 190"
-            fill="none"
-            aria-hidden="true"
-          >
-            <circle
-              cx="120"
-              cy="95"
-              r="76"
-              stroke="currentColor"
-              strokeDasharray="2 8"
-            />
-            <path d="M42 46 120 95 200 42M120 95l54 65" stroke="currentColor" />
-            <rect
-              x="92"
-              y="67"
-              width="56"
-              height="56"
-              rx="18"
-              fill="#F1F6FC"
-              stroke="currentColor"
-            />
-            <path
-              d="m109 99 8-8m-3 15-3 3a9 9 0 0 1-13-13l9-9a9 9 0 0 1 13 0m-1 4 3-3a9 9 0 0 1 13 13l-9 9a9 9 0 0 1-13 0"
-              transform="translate(5 -4)"
-              stroke="#466B94"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <circle cx="42" cy="46" r="10" fill="#FBEADB" stroke="#C27B3F" />
-            <circle cx="200" cy="42" r="8" fill="#DCE9FA" stroke="#6484AC" />
-            <circle cx="174" cy="160" r="8" fill="#E7E1F8" stroke="#9580C4" />
-          </svg>
-        </section>
-        <div className="directory-label">
-          <div>
-            <span className="eyebrow">THE VLR NETWORK</span>
-            <h2>Explore our partner brands</h2>
-          </div>
-          <span>{String(brands.length).padStart(2, '0')} CONNECTIONS</span>
         </div>
-        <nav className="company-list" aria-label="VLR partner brands">
-          {brands.map((brand, index) => (
-            <article
-              className="company-card"
-              key={brand.slug}
-              data-preset={brand.experience}
-            >
-              <div className="company-visual">
-                <span className="company-number">0{index + 1}</span>
-                <span className="company-orbit" aria-hidden="true" />
-                <Image
-                  src={brand.logo}
-                  alt=""
-                  width={180}
-                  height={82}
-                  unoptimized
-                />
-                {brand.placeholder && (
-                  <span className="preview-badge">Client preview</span>
-                )}
-              </div>
-              <div className="company-details">
-                <p className="company-category">{brand.category}</p>
-                <h2>{brand.name}</h2>
-                <p className="company-tagline">{brand.tagline}</p>
-                <div className="company-bottom">
-                  <span>
-                    Explore brand <span aria-hidden="true">↗</span>
+        <section
+          id="connections"
+          className="partner-discovery"
+          aria-labelledby="discovery-title"
+          tabIndex={-1}
+        >
+          <div className="directory-label">
+            <div>
+              <p className="eyebrow">GOOD BRANDS. CLOSER CONNECTIONS.</p>
+              <h2 id="discovery-title">
+                Discover what’s connected<span>.</span>
+              </h2>
+              <p className="discovery-description">
+                Explore the brands and experiences in our growing digital
+                network.
+              </p>
+            </div>
+            <span className="connection-count">
+              <strong>{String(brands.length).padStart(2, '0')}</strong> brand
+              connections
+            </span>
+          </div>
+          <nav className="company-list" aria-label="VLR partner brands">
+            {brands.map((brand, index) => (
+              <article
+                className="company-card"
+                key={brand.slug}
+                data-preset={brand.experience}
+              >
+                <div className="company-visual">
+                  <span className="company-number">
+                    {String(index + 1).padStart(2, '0')} / THE NETWORK
                   </span>
-                  <div className="card-actions">
-                    <LinkActions
-                      title={brand.name}
-                      url={masterUrl(brand.slug)}
-                      logo={brand.logo}
-                      filename={`${brand.slug}-master-qr.png`}
-                      allowDownload={siteSettings().downloadableMaster}
+                  <span className="company-orbit" aria-hidden="true" />
+                  {brand.experience === 'food' && (
+                    <Image
+                      className="company-food-art"
+                      src="/brands/mozza-italia/food/basil.svg"
+                      alt=""
+                      width={80}
+                      height={80}
+                      unoptimized
                     />
+                  )}
+                  <Image
+                    className="company-logo"
+                    src={brand.logo}
+                    alt=""
+                    width={180}
+                    height={82}
+                    unoptimized
+                  />
+                  <span
+                    className={
+                      brand.placeholder ? 'preview-badge' : 'brand-status'
+                    }
+                  >
+                    {brand.placeholder
+                      ? 'Client preview'
+                      : 'Discover the brand'}
+                  </span>
+                </div>
+                <div className="company-details">
+                  <p className="company-category">{brand.category}</p>
+                  <h3>{brand.name}</h3>
+                  <p className="company-tagline">{brand.tagline}</p>
+                  <div className="company-bottom">
                     <Link
-                      className="card-action company-open"
+                      className="company-open"
                       href={`/${brand.slug}`}
                       aria-label={`Open ${brand.name}`}
                     >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        aria-hidden="true"
-                      >
-                        <path d="M7 17 17 7M7 7h10v10" />
-                      </svg>
+                      Explore brand <span aria-hidden="true">↗</span>
                     </Link>
+                    <div className="card-actions">
+                      <LinkActions
+                        title={brand.name}
+                        url={masterUrl(brand.slug)}
+                        logo={brand.logo}
+                        filename={`${brand.slug}-master-qr.png`}
+                        allowDownload={siteSettings().downloadableMaster}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
-        </nav>
-        <p className="directory-note">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            aria-hidden="true"
-          >
-            <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h6v6h-6z" />
-          </svg>
-          One smart page. One QR. A direct connection to each brand.
-        </p>
+              </article>
+            ))}
+          </nav>
+          <p className="directory-note">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h6v6h-6z" />
+            </svg>
+            One smart page. One QR. A direct connection to each brand.
+          </p>
+        </section>
+        <div className="connection-ribbon" aria-hidden="true">
+          <div className="ribbon-track">
+            {[0, 1].map((copy) => (
+              <span className="ribbon-copy" key={copy}>
+                DISCOVER <i>✳</i> CONNECT <i>✳</i> EXPLORE <i>✳</i> EXPERIENCE{' '}
+                <i>✳</i> GO BEYOND <i>✳</i>
+              </span>
+            ))}
+          </div>
+        </div>
       </main>
-      <Footer />
+      <Footer directory />
     </div>
   );
 }

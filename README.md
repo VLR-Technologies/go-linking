@@ -42,7 +42,7 @@ New presets live in `BrandAnimation.tsx` and `multi-brand.css`. Their motion fin
 
 ## QR, copy and accessibility
 
-The shared controls are ordered QR, Copy, Open. Copy writes only the exact configured URL, keeps the current page, and announces success through a polite live region with a fixed 1.8-second toast. Clipboard failures offer a selectable read-only URL in the dialog. Open preserves normal same-tab links, including without JavaScript.
+Destination controls are ordered QR, Copy, Open. Homepage cards use a labeled Explore link with independent QR and Copy buttons. Copy writes only the exact configured URL, keeps the current page, and announces success through a polite live region with a fixed 1.8-second toast. Clipboard failures offer a selectable read-only URL in the dialog. Open preserves normal same-tab links, including without JavaScript.
 
 QR opens a native modal dialog: centered on desktop, bottom sheet on phones. Native modality confines keyboard focus and makes background content inert. Escape and Close dismiss it and restore focus. It contains the brand logo, link title, instruction, Copy Link and Download QR. QR generation is lazy-loaded locally using the existing `qrcode` dependency, with untouched black modules, white background and four-module quiet zone. Download PNGs are 1024px. Tests independently decode their pixels using `jsqr`.
 
@@ -58,7 +58,13 @@ No authentication, database, analytics, tracking, cookies, signup or marketing c
 
 ## VLR presentation and directory interactions
 
-The root uses an ice-blue/silver background with ambient lighting, a faint engineering grid and restrained orange accents. A controlled-width hero leads directly to brand-specific cream, navy and violet cards. A real Next link extends over each complete card; QR/Copy buttons sit above it as independent sibling controls. Root action targets are at least 44 by 44 pixels. No nested buttons or links, JavaScript-only card navigation, or event propagation workaround is needed.
+The root is a bright digital connection hub: bold local Barlow Condensed branding, Manrope text, electric blue/violet accents and a compact network illustration. `src/app/page.tsx` is the server-rendered composition and still maps directly over the brand registry. Homepage-only styling lives in `directory-experience.css`; shared controls and individual brand presets remain in `multi-brand.css` and `brand-experience.css`.
+
+`ConnectedHero` assembles the headline, real discovery/VLR links and `ConnectionNetwork`. The network uses local inline SVG connections, four slowly floating destination motifs and a central link hub. `AnimatedWords` renders four overlapping CSS grid items in a fixed-height slot: each holds for three seconds and crossfades over 600ms in a 14.4-second cycle. The entire visual text is hidden from assistive technology in favor of one static equivalent. Reduced motion shows Brands. and removes all motion. Edit the words and matching delay/color rules together if changing the number of phrases.
+
+`DirectoryMotion` is the only added client component. Its native checkbox pauses motion (and selects a readable static headline), including without JavaScript. A cleaned-up IntersectionObserver and visibility listener suspend hero/ribbon animations independently when offscreen or the tab is hidden. No animation library, per-frame React updates, remote images or remote fonts are used.
+
+The brief Discover → Connect → Explore line leads to the partner showcase. Cards use their existing food, architectural or educational personality, with explicit Client preview badges wherever configured. A real Next link extends over each complete card; QR/Copy buttons sit above it as independent sibling controls. Root action targets are at least 44 by 44 pixels. Mobile uses a shortened constellation and a single-column showcase; tablets use two columns and desktop uses three. Brand count and content come from configuration; adding a fourth brand requires no homepage component changes.
 
 `VlrLockup.tsx` is the single source for the unmodified logo, TECHNOLOGIES text and official line ENGINEERING INTELLIGENCE FOR TOMORROW. It is used by the directory header and common footer. The footer link remains https://vlrtechnologies.net/.
 

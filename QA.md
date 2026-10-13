@@ -1,3 +1,61 @@
+# Connected experience redesign QA — 13 October 2026
+
+## Scope and result
+
+Implemented locally in `/Users/likhithreddy/Documents/go-linking` on the existing `main` checkout. No commit, push, merge, deployment, new dependency, backend endpoint or service was added. The homepage is now a bright digital connection hub with bold local typography, a blue/violet network hero, rotating discovery words, real Explore/VLR links, a compact storytelling line, themed partner cards, a slow connection ribbon and an updated directory footer. The two configured placeholders remain Client previews.
+
+## Created files
+
+- `src/app/directory-experience.css`: homepage tokens, layout, responsive treatments, motion and reduced-motion rules.
+- `src/components/directory/ConnectedHero.tsx`: server-rendered hero composition and real CTAs.
+- `src/components/directory/AnimatedWords.tsx`: CSS-only rotating text with one static accessible equivalent.
+- `src/components/directory/ConnectionNetwork.tsx`: original decorative inline SVG/CSS connection artwork.
+- `src/components/directory/DirectoryMotion.tsx`: native pause checkbox and visibility/offscreen suspension with listener/observer cleanup.
+- `tests/browser/directory-experience.spec.ts`: responsive composition, assets, count, preview badges, CTA scrolling/focus, console errors, normal-motion accessibility, fixed headline bounds, crossfade continuity, pause, reduced motion and no-JavaScript navigation.
+
+## Modified files
+
+- `src/app/page.tsx`: homepage composition, metadata, logical H1/H2/H3 hierarchy, native scroll target and configuration-driven partner cards.
+- `src/app/multi-brand.css`: removed the previous homepage rules after moving the directory experience into its own stylesheet; shared controls and brand-specific rules remain.
+- `src/components/Footer.tsx`: optional directory message and layout hook; compact brand footer preserved.
+- `tests/browser/multi-brand.spec.ts`: added 360px to existing all-route responsive and accessibility coverage.
+- `README.md`: maintenance and animation instructions.
+- `QA.md`: this handoff, followed by the previous historical report.
+
+## Motion and maintenance
+
+The four words hold for three seconds and crossfade with a small vertical movement over 600ms, using staggered CSS animation delays in a fixed-height grid slot. Assistive technology gets a static phrase without a live announcement loop. Reduced motion shows one stable word and disables animation. The native pause checkbox chooses a readable static headline and pauses the network/ribbon, including without JavaScript. IntersectionObserver and page visibility listeners suspend hero and ribbon work independently when they are not visible.
+
+The network has four slowly drifting nodes, three lightweight SVG line pulses and a soft central halo. Shadows and gradients stay static. No per-frame React state updates or animation dependency was introduced. Brand data/count remain sourced from `src/config/brands.ts`; add future clients through configuration and assets. Homepage CSS uses directory-specific classes; the existing brand styles, LinkActions, routes, URLs, origin validation and master-download safeguards were left intact.
+
+## Final verification
+
+| Check                                        | Final result                                                                                                                                                                                                |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm test`                                   | 26 passed                                                                                                                                                                                                   |
+| `npm run lint`                               | Passed                                                                                                                                                                                                      |
+| `npm run typecheck`                          | Passed                                                                                                                                                                                                      |
+| `npm run format:check`                       | Passed                                                                                                                                                                                                      |
+| `npm run build`                              | Passed; all configured brand/redirect pages generated                                                                                                                                                       |
+| `PLAYWRIGHT_CHANNEL=chrome npm run test:e2e` | 57 passed in one final run                                                                                                                                                                                  |
+| Responsive layouts                           | Homepage and all three brand routes at 360, 390, 430, 768, 1024, 1280 and 1440px; no horizontal overflow                                                                                                    |
+| Accessibility                                | No axe WCAG 2 A/AA or 2.1 AA violations in tested pages/dialogs; normal and reduced-motion homepage coverage                                                                                                |
+| Motion                                       | All four word states, crossfade samples, fixed bounds, manual pause, pseudo-element halo pause, offscreen suspension and reduced motion passed                                                              |
+| Interactions                                 | Native CTA scroll/focus, skip link, full-card pointer and Enter navigation, independent QR/Copy, exact clipboard URLs, decoded QRs, downloads and modal focus restoration passed                            |
+| Regressions                                  | Mozza logo fallback, 78px card proportions, food animation clipping/pause, exact redirects, preview notices, disabled destinations, staff QR protection, unknown routes and no-JavaScript navigation passed |
+
+The initial browser run exposed excessive hero height and a gap between word transitions; both were repaired. A scroll assertion was corrected to account for native anchors reaching the document end on short desktop pages. The final suite has no failed tests. The sandbox initially blocked local IPC/server sockets; authorized verification ran outside it. Installed Google Chrome was used because Microsoft Edge is not installed on this Mac.
+
+Final Playwright screenshots were produced and visually reviewed at **all seven requested widths**. Normal-motion screenshots (frozen at a readable word state) are `test-results/connected-directory-{width}.png`; reduced-motion/all-brand screenshots are `test-results/after-{route}-{width}.png`. These generated files remain ignored by Git. Mobile artwork is deliberately shortened and clipped away from readable text, with stacked cards. Tablet uses two columns; desktop uses three. QR/Copy touch targets remain 44×44px.
+
+## Known limits
+
+No known functional issue remains from this redesign. Verification used desktop Chrome with emulated viewports, not physical iOS/Android devices, Safari, screen-reader hardware or printed QR/NFC scans. The existing Next warning about a parent-directory lockfile remains non-blocking. Elevator and Tuition still require real client configuration before launch, and production master QR printing still requires the established live-origin configuration and verification.
+
+---
+
+The report below records the earlier refinement and is retained as history.
+
 # Multi-brand UI refinement QA — 12 October 2026
 
 ## Scope and repository

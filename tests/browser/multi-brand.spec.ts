@@ -4,7 +4,7 @@ import jsQR from 'jsqr';
 import { PNG } from 'pngjs';
 import { brands } from '../../src/config/brands';
 
-for (const width of [390, 430, 768, 1024, 1280, 1440]) {
+for (const width of [360, 390, 430, 768, 1024, 1280, 1440]) {
   for (const path of ['/', ...brands.map((brand) => `/${brand.slug}`)]) {
     test(`${path} responsive and accessible at ${width}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
