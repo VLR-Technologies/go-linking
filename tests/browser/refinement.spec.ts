@@ -7,7 +7,7 @@ for (const width of [390, 1280])
   }) => {
     await page.setViewportSize({ width, height: 900 });
     for (const brand of brands) {
-      for (const target of ['.company-visual', '.company-tagline']) {
+      for (const target of ['.company-visual', '.company-description']) {
         await page.goto('/');
         const card = page.locator('.company-card').filter({
           has: page.getByRole('heading', { name: brand.name, exact: true }),
@@ -37,7 +37,7 @@ for (const width of [390, 1280])
     }
   });
 
-test('VLR lockups and official tagline are consistent without duplicate VLR text', async ({
+test('VLR identity is preserved and landing-page attribution is concise', async ({
   page,
 }) => {
   const tagline = 'ENGINEERING INTELLIGENCE FOR TOMORROW';
@@ -51,7 +51,9 @@ test('VLR lockups and official tagline are consistent without duplicate VLR text
       'src',
       '/brands/vlr/logo.png',
     );
-    await expect(footer.locator('.vlr-tagline')).toHaveText(tagline);
+    if (route !== '/')
+      await expect(footer.locator('.vlr-tagline')).toHaveText(tagline);
+    else await expect(footer.locator('.vlr-tagline')).toHaveCount(0);
     await expect(footer.locator('.vlr-lockup')).not.toContainText(
       'VLR Technologies',
     );
@@ -63,8 +65,8 @@ test('VLR lockups and official tagline are consistent without duplicate VLR text
       await expect(
         page.locator('.directory-header .vlr-lockup strong'),
       ).toHaveText('TECHNOLOGIES');
-      await expect(page.locator('.directory-header .vlr-tagline')).toHaveText(
-        tagline,
+      await expect(page.locator('.directory-header .vlr-tagline')).toHaveCount(
+        0,
       );
       await expect(footer).toContainText(
         '© 2026 VLR Technologies. All rights reserved.',
