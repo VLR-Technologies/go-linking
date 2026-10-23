@@ -6,6 +6,8 @@ export default defineConfig([
   ...nextTs,
   globalIgnores([
     '.next/**',
+    '.next-product-qa/**',
+    '.dev-data/**',
     '.npm-cache/**',
     '.browsers/**',
     'test-results/**',

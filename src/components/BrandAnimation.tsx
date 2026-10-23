@@ -1,15 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Brand } from '@/config/brands';
 export function BrandAnimation({ brand }: { brand: Brand }) {
+  const preset = brand.animationPreset || brand.experience;
+  if (preset === 'none') return null;
   return (
-    <div
-      className={`brand-animation ${brand.experience}-scene`}
-      aria-hidden="true"
-    >
+    <div className={`brand-animation ${preset}-scene`} aria-hidden="true">
       {brand.decor?.map((asset) => (
         <img key={asset} src={asset} alt="" className="scene-art" />
       ))}
-      {brand.experience === 'elevator' && (
+      {preset === 'elevator' && (
         <svg className="elevator-motion" viewBox="0 0 320 300" fill="none">
           <path
             className="shaft-lines"
@@ -37,7 +36,7 @@ export function BrandAnimation({ brand }: { brand: Brand }) {
           </g>
         </svg>
       )}
-      {brand.experience === 'education' && (
+      {preset === 'education' && (
         <svg className="education-motion" viewBox="0 0 320 260" fill="none">
           <g className="book-open">
             <path
@@ -71,6 +70,52 @@ export function BrandAnimation({ brand }: { brand: Brand }) {
             stroke="#98641A"
             strokeWidth="2"
           />
+        </svg>
+      )}
+      {!['elevator', 'education'].includes(preset) && (
+        <svg
+          className={`industry-motion motion-${preset}`}
+          viewBox="0 0 320 320"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          {preset === 'healthcare' ? (
+            <>
+              <circle cx="160" cy="160" r="100" />
+              <path d="M140 100h40v40h40v40h-40v40h-40v-40h-40v-40h40Z" />
+              <path d="M30 260h70l20-35 25 55 25-30h100" />
+            </>
+          ) : preset === 'real-estate' ? (
+            <>
+              <path d="M55 260V120l95-65 100 65v140M80 260h190M130 260v-80h40v80M90 135h25v25H90M190 135h25v25h-25" />
+              <path d="m30 130 120-90 130 90" />
+            </>
+          ) : preset === 'retail' ? (
+            <>
+              <path d="M75 110h170l-10 155H85ZM125 120V90a35 35 0 0 1 70 0v30" />
+              <path d="m270 45 5 15 15 5-15 5-5 15-5-15-15-5 15-5Z" />
+            </>
+          ) : preset === 'network' ? (
+            <>
+              <path d="m70 80 90 80 100-90M160 160l-90 90M160 160l100 90" />
+              {[
+                [70, 80],
+                [160, 160],
+                [260, 70],
+                [70, 250],
+                [260, 250],
+              ].map(([x, y]) => (
+                <circle key={x + ',' + y} cx={x} cy={y} r="20" />
+              ))}
+            </>
+          ) : (
+            <>
+              <circle cx="160" cy="160" r="105" />
+              <circle cx="160" cy="160" r="70" />
+              <path d="M25 160h270M160 25v270" />
+            </>
+          )}
         </svg>
       )}
     </div>

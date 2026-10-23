@@ -11,12 +11,14 @@ export function LinkActions({
   logo,
   filename,
   allowDownload = true,
+  notice,
 }: {
   url: string;
   title: string;
   logo?: string;
   filename: string;
   allowDownload?: boolean;
+  notice?: string;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -139,6 +141,7 @@ export function LinkActions({
           <p className="eyebrow">SCAN · CONNECT</p>
           <h2 id={`${id}-title`}>{title}</h2>
           <p>Scan to open {title}</p>
+          {notice && <p className="qr-preview-note">{notice}</p>}
           {/* The generated image includes an untouched four-module white quiet zone. */}
           {qr ? (
             <img

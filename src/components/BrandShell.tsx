@@ -16,6 +16,7 @@ export function BrandShell({
     <div
       className={`brand-shell ${displayFont.variable} ${uiFont.variable}`}
       data-experience={brand.experience}
+      data-custom-theme={brand.customTheme || undefined}
       style={
         {
           '--brand-red': brand.theme.red,
@@ -33,13 +34,17 @@ export function BrandShell({
       <Link className="brand-back" href="/" aria-label="Back to Go-Linking">
         <span aria-hidden="true">←</span> All Brands
       </Link>
-      {brand.experience === 'food' && <FoodDecorations />}
-      {brand.experience !== 'food' && <BrandAnimation brand={brand} />}
+      {(brand.animationPreset || brand.experience) === 'food' && (
+        <FoodDecorations />
+      )}
+      {(brand.animationPreset || brand.experience) !== 'food' && (
+        <BrandAnimation brand={brand} />
+      )}
       <main id="main" className="brand-main">
         {children}
       </main>
       <Footer compact />
-      {brand.experience === 'food' && (
+      {(brand.animationPreset || brand.experience) === 'food' && (
         <label className="motion-control">
           <input type="checkbox" aria-label="Pause background animation" />
           <span>Pause the float</span>
