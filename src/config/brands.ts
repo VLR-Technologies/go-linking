@@ -12,6 +12,9 @@ export function isUsableDestination(link: Destination) {
       !url.username &&
       !url.password &&
       (url.protocol === 'https:' ||
+        url.protocol === 'http:' ||
+        (url.protocol === 'mailto:' &&
+          /^mailto:[^\s@?&#:]+@[^\s@?&#:]+\.[^\s@?&#:]+$/.test(link.url)) ||
         (url.protocol === 'tel:' &&
           /^tel:\+?[0-9][0-9 ()-]{4,}$/.test(link.url)))
     );
@@ -39,7 +42,9 @@ export function validateBrands(items: Brand[]) {
     const ids = new Set<string>();
     for (const link of brand.links) {
       if (
-        (!link.disabled && Boolean(link.url) && !isUsableDestination(link)) ||
+        (!link.disabled &&
+          Boolean(link.url) &&
+          (!isUsableDestination(link) || link.url.startsWith('http:'))) ||
         !/^[a-z0-9-]+$/.test(link.id) ||
         ids.has(link.id) ||
         !link.title ||

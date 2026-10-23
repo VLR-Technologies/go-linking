@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { brands } from '@/config/brands';
+import { brandService } from '@/lib/product/providers';
+import { renderBrand } from '@/lib/product/model';
+export const dynamic = 'force-dynamic';
 import { siteSettings } from '@/lib/site';
 import { Footer } from '@/components/Footer';
 import { VlrLockup } from '@/components/VlrLockup';
@@ -16,7 +18,8 @@ export const metadata: Metadata = {
     'Discover partner brands and their digital destinations with Go-Linking, the digital connection hub by VLR Technologies. Explore, scan a QR, or share a brand link.',
 };
 
-export default function Home() {
+export default async function Home() {
+  const brands = (await brandService.directory()).map(renderBrand);
   const { downloadableMaster } = siteSettings();
 
   return (

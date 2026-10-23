@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './brand-experience.css';
 import './multi-brand.css';
+import './product-brand.css';
 import { siteSettings } from '@/lib/site';
 export const metadata: Metadata = {
   metadataBase: new URL(siteSettings().origin),
@@ -19,7 +20,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <a className="skip-link" href="#main">
           Skip to content

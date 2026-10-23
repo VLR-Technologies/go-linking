@@ -30,7 +30,17 @@ export type Brand = {
   category: string;
   placeholder?: boolean;
   decor?: string[];
-  experience: 'food' | 'elevator' | 'education';
+  experience:
+    | 'food'
+    | 'elevator'
+    | 'education'
+    | 'healthcare'
+    | 'real-estate'
+    | 'retail'
+    | 'network'
+    | 'minimal';
+  animationPreset?: Brand['experience'] | 'none';
+  customTheme?: boolean;
   copy: {
     brandLine: string;
     heading: string;
