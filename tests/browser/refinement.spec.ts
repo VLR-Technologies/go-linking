@@ -22,9 +22,10 @@ for (const width of [390, 1280])
           },
         });
         await expect(page).toHaveURL(`/${brand.slug}`);
-        await page
-          .getByRole('link', { name: 'Back to Go-Linking', exact: true })
-          .click();
+        await expect(
+          page.getByRole('link', { name: /All Brands|Back to Go-Linking/i }),
+        ).toHaveCount(0);
+        await page.goto('/');
         await expect(page).toHaveURL('/');
       }
       const link = page.getByRole('link', {

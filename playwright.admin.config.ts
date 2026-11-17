@@ -25,7 +25,8 @@ export default defineConfig({
       GO_LINKING_ADMIN_USERNAME: process.env.GO_LINKING_ADMIN_USERNAME,
       GO_LINKING_ADMIN_PASSWORD: process.env.GO_LINKING_ADMIN_PASSWORD,
       GO_LINKING_SESSION_SECRET: process.env.GO_LINKING_SESSION_SECRET,
-      NEXT_PUBLIC_SITE_URL: 'http://localhost:3116',
+      NEXT_PUBLIC_SITE_URL:
+        process.env.PLAYWRIGHT_SITE_URL || 'http://localhost:3116',
     },
   },
   reporter: 'list',

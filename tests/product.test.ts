@@ -136,6 +136,71 @@ test('corrupt stores fail safely without reseeding or overwriting', async () => 
     'broken',
   );
 });
+test('legacy Mozza seed correction persists atomically without changing other brand edits', async () => {
+  const { repo, directory } = await repository();
+  const items = seedBrands();
+  const mozza = items[0];
+  mozza.name = 'Locally managed Mozza';
+  mozza.primaryColor = '#123456';
+  mozza.directoryVisible = false;
+  mozza.updatedAt = '2025-01-01T00:00:00.000Z';
+  const instagram = mozza.links.find((link) => link.id === 'instagram')!;
+  instagram.url = 'https://www.instagram.com/italia.mozza';
+  instagram.handle = '@italia.mozza';
+  instagram.description = 'Locally managed description';
+  instagram.enabled = false;
+  const original = JSON.parse(JSON.stringify(items));
+  const file = path.join(directory, 'brands.json');
+  await writeFile(file, JSON.stringify({ version: 1, brands: items }));
+  const updated = await repo.list();
+  const expected = structuredClone(original);
+  expected[0].links[2].url =
+    'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw';
+  expected[0].links[2].handle = '@mozza.italia1';
+  expected[0].updatedAt = updated[0].updatedAt;
+  assert.deepEqual(updated, expected);
+  assert.ok(
+    Date.parse(updated[0].updatedAt) > Date.parse(original[0].updatedAt),
+  );
+  const stored = await readFile(file, 'utf8');
+  assert.deepEqual(JSON.parse(stored).brands, expected);
+  assert.deepEqual(await new LocalBrandRepository(directory).list(), expected);
+  assert.equal(await readFile(file, 'utf8'), stored);
+  await assert.rejects(
+    () => new BrandService(repo).save(original[0], original[0].id),
+    /another window/,
+  );
+});
+test('seed correction preserves custom handles, URLs, renamed brands and other clients', async () => {
+  for (const scenario of ['handle', 'url', 'id', 'slug', 'type', 'removed']) {
+    const { repo, directory } = await repository();
+    const items = seedBrands();
+    const mozza = items[0];
+    const instagram = mozza.links.find((link) => link.id === 'instagram')!;
+    instagram.url = 'https://www.instagram.com/italia.mozza';
+    instagram.handle = '@managed.account';
+    if (scenario === 'url')
+      instagram.url = 'https://www.instagram.com/managed.account';
+    if (scenario === 'id') mozza.id = 'user-managed-mozza';
+    if (scenario === 'slug') mozza.slug = 'renamed-mozza';
+    if (scenario === 'type') instagram.type = 'custom';
+    if (scenario === 'removed')
+      mozza.links = mozza.links.filter((link) => link !== instagram);
+    const original = JSON.parse(JSON.stringify(items));
+    const file = path.join(directory, 'brands.json');
+    const stored = JSON.stringify({ version: 1, brands: items });
+    await writeFile(file, stored);
+    const updated = await repo.list();
+    if (scenario === 'handle') {
+      original[0].links[2].url =
+        'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw';
+      original[0].updatedAt = updated[0].updatedAt;
+    } else {
+      assert.equal(await readFile(file, 'utf8'), stored);
+    }
+    assert.deepEqual(updated, original, scenario);
+  }
+});
 test('seed presentation preserves every existing brand field and exact link URL', () => {
   const seeds = seedBrands();
   for (let i = 0; i < brands.length; i++) {
@@ -163,7 +228,7 @@ test('dynamic rendered brands resolve exact external targets for QR, copy and re
   );
   assert.equal(
     getDestinationUrl(record, 'instagram'),
-    'https://www.instagram.com/italia.mozza',
+    'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw',
   );
   assert.equal(getDestinationUrl(record, 'whatsapp'), brands[0].links[3].url);
 
@@ -263,6 +328,16 @@ test('local auth validates credentials, tampering, expiry, logout and production
 test('production repository is read-only', async () => {
   const repo = new ReadOnlySeedRepository();
   assert.equal((await repo.list()).length, 3);
+  const service = new BrandService(repo);
+  const mozza = renderBrand((await service.published('mozza-italia'))!);
+  assert.equal(
+    getDestinationUrl(mozza, 'instagram'),
+    'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw',
+  );
+  assert.equal(
+    mozza.links.find((link) => link.id === 'instagram')?.handle,
+    '@mozza.italia1',
+  );
   await assert.rejects(() => repo.transact(), /disabled/);
 });
 test('logout revocation persists across provider reloads', async () => {

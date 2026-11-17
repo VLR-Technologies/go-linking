@@ -2,9 +2,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PNG } from 'pngjs';
 import jsQR from 'jsqr';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 const origin = 'http://localhost:3116';
+const masterOrigin = process.env.PLAYWRIGHT_SITE_URL || origin;
 test.beforeAll(async () => {
   await mkdir(path.join(process.cwd(), '.npm-cache/product-qa'), {
     recursive: true,
@@ -190,12 +191,12 @@ test('complete onboarding: upload, palette, links, live preview, persistence, pu
   ).toBeVisible();
   const master = page.locator('.admin-qr-asset').first();
   const image = await master.getByRole('img').getAttribute('src');
-  expect(decodeQr(image!)).toBe(`${origin}/${slug}`);
+  expect(decodeQr(image!)).toBe(`${masterOrigin}/${slug}`);
   await master
     .getByRole('button', { name: `Copy ${name} master link` })
     .click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    `${origin}/${slug}`,
+    `${masterOrigin}/${slug}`,
   );
   const published = await (
     await page.request.get('/api/admin/brands/' + editURL.split('/').at(-1))
@@ -234,6 +235,7 @@ test('complete onboarding: upload, palette, links, live preview, persistence, pu
     fullPage: true,
   });
   await page.goto(`/${slug}`);
+  await expect(page.locator('.brand-shell a[href="/"]')).toHaveCount(0);
   await expect(
     page.getByRole('heading', { name: 'Care within reach.' }),
   ).toBeVisible();
@@ -281,6 +283,48 @@ test('complete onboarding: upload, palette, links, live preview, persistence, pu
   page.once('dialog', (d) => d.accept());
   await card.getByRole('button', { name: 'Archive', exact: true }).click();
   await expect(card.locator('.status-badge')).toHaveText('archived');
+});
+test('Mozza admin master and Instagram QR assets use the exact public destinations', async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await login(page);
+  await page.goto('/admin/qr');
+  await page.getByLabel('Select brand').selectOption('seed-mozza-italia');
+  for (const [title, expected] of [
+    ['Mozza Italia master', `${masterOrigin}/mozza-italia`],
+    [
+      'Instagram',
+      'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw',
+    ],
+  ]) {
+    const asset = page.locator('.admin-qr-asset').filter({
+      has: page.getByRole('heading', { name: title, exact: true }),
+    });
+    await expect(asset.locator('code')).toHaveText(expected);
+    const image = asset.getByRole('img');
+    await expect(image).toBeVisible();
+    expect(decodeQr((await image.getAttribute('src'))!)).toBe(expected);
+    await asset
+      .getByRole('button', { name: `Copy ${title} link`, exact: true })
+      .click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      expected,
+    );
+    const pending = page.waitForEvent('download');
+    await asset
+      .getByRole('link', { name: 'Download PNG', exact: true })
+      .click();
+    const downloaded = await (await pending).path();
+    const bytes = await readFile(downloaded!);
+    expect(decodeQr(`data:image/png;base64,${bytes.toString('base64')}`)).toBe(
+      expected,
+    );
+    await expect(
+      asset.getByRole('link', { name: 'Download SVG', exact: true }),
+    ).toHaveAttribute('href', /^data:image\/svg\+xml/);
+  }
 });
 test('server-side validation rejects duplicate slugs, unsafe links and malformed uploads', async ({
   page,
