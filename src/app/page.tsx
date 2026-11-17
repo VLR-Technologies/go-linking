@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { brands } from '@/config/brands';
+import { brandService } from '@/lib/product/providers';
+import { renderBrand } from '@/lib/product/model';
 import { siteSettings } from '@/lib/site';
 import { Footer } from '@/components/Footer';
 import { VlrLockup } from '@/components/VlrLockup';
@@ -10,13 +11,16 @@ import { ConnectionMark } from '@/components/directory/ConnectionMark';
 import { uiFont } from './fonts';
 import './directory-experience.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Go-Linking — One Link. Endless Connections. | VLR Technologies',
   description:
     'Discover partner brands and their digital destinations with Go-Linking, the digital connection hub by VLR Technologies. Explore, scan a QR, or share a brand link.',
 };
 
-export default function Home() {
+export default async function Home() {
+  const brands = (await brandService.directory()).map(renderBrand);
   const { downloadableMaster } = siteSettings();
 
   return (

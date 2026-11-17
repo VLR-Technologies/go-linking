@@ -1,40 +1,39 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-import {
-  brands,
-  getBrand,
-  getDestination,
-  getDestinationUrl,
-  isUsableDestination,
-} from '@/config/brands';
+import { getDestination, getDestinationUrl } from '@/config/brands';
+import { brandService } from '@/lib/product/providers';
+import { renderBrand } from '@/lib/product/model';
+
+export const dynamic = 'force-dynamic';
+
 type Params = Promise<{ brand: string; destination: string }>;
-export function generateStaticParams() {
-  return brands.flatMap((brand) =>
-    brand.links.filter(isUsableDestination).map((destination) => ({
-      brand: brand.slug,
-      destination: destination.id,
-    })),
-  );
+
+async function publishedBrand(slug: string) {
+  const record = await brandService.published(slug);
+  return record && renderBrand(record);
 }
+
 export async function generateMetadata({
   params,
 }: {
   params: Params;
 }): Promise<Metadata> {
   const route = await params;
-  const brand = getBrand(route.brand);
+  const brand = await publishedBrand(route.brand);
   const link = brand && getDestination(brand, route.destination);
-  return link && brand
+  const url = brand && getDestinationUrl(brand, route.destination);
+  return link && url
     ? {
         title: `${link.title} | ${brand.name}`,
         description: link.description,
-        alternates: { canonical: getDestinationUrl(brand, route.destination) },
+        alternates: { canonical: url },
       }
     : {};
 }
+
 export default async function DestinationRoute({ params }: { params: Params }) {
   const route = await params;
-  const brand = getBrand(route.brand);
+  const brand = await publishedBrand(route.brand);
   if (!brand) notFound();
   const url = getDestinationUrl(brand, route.destination);
   if (!url) notFound();

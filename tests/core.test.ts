@@ -7,6 +7,7 @@ import {
   getBrand,
   getDestination,
   getDestinationUrl,
+  isUsableDestination,
   validateBrands,
 } from '../src/config/brands';
 import { qrDataUrl } from '../src/lib/qr';
@@ -56,6 +57,28 @@ test('unknown destinations and brands cannot redirect', () => {
     assert.equal(getDestinationUrl(brands[0], id), undefined);
   for (const slug of ['//evil.com', '../mozza-italia', 'mozza-italia?next=x'])
     assert.throws(() => getPublicBrandUrl(slug));
+});
+test('destination resolver preserves supported web, phone and email link types', () => {
+  const brand = structuredClone(brands[0]);
+  for (const url of [
+    'http://business.example.com/menu?day=friday',
+    'mailto:hello@business.example.com',
+    'tel:+919949799488',
+  ]) {
+    brand.links[0].url = url;
+    assert.equal(isUsableDestination(brand.links[0]), true);
+    assert.equal(getDestinationUrl(brand, brand.links[0].id), url);
+  }
+  for (const url of [
+    'http://localhost:3000',
+    'https://192.168.1.20',
+    'http://[::1]',
+    'javascript:alert(1)',
+  ]) {
+    brand.links[0].url = url;
+    assert.equal(isUsableDestination(brand.links[0]), false);
+    assert.equal(getDestinationUrl(brand, brand.links[0].id), undefined);
+  }
 });
 test('unsafe configuration is rejected', () => {
   for (const url of [
@@ -141,6 +164,10 @@ test('production and Vercel preview default to the canonical public origin', () 
         /public HTTPS origin/,
       );
   }
+  assert.equal(
+    getPublicBrandUrl('dynamic-client', siteSettings('', production)),
+    'https://go-linking.vercel.app/dynamic-client',
+  );
 });
 
 test('local development supports its own origin without affecting external destinations', () => {

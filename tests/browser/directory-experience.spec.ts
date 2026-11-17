@@ -127,6 +127,12 @@ test('network motion has stable bounds, a pause control, and reduced-motion supp
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
   const words = page.locator('.rotating-words');
+  // Measure after the parent's one-time entrance transform settles.
+  await page.locator('.hero-network-wrap').evaluate(async (element) => {
+    await Promise.all(
+      element.getAnimations().map((animation) => animation.finished),
+    );
+  });
   const bounds = await words.boundingBox();
   for (const [index, time] of [1000, 5000, 9000, 13000].entries()) {
     await page.evaluate((time) => {

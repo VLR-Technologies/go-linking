@@ -1,21 +1,29 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getBrand, getDestinationUrl } from '@/config/brands';
-import { getPublicBrandUrl, hubPath, siteSettings } from '@/lib/site';
-import { QRCodeCard } from '@/components/QRCodeCard';
+import { getDestinationUrl } from '@/config/brands';
 import { Footer } from '@/components/Footer';
+import { QRCodeCard } from '@/components/QRCodeCard';
+import { brandService } from '@/lib/product/providers';
+import { renderBrand } from '@/lib/product/model';
+import { getPublicBrandUrl, hubPath, siteSettings } from '@/lib/site';
+
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'QR Assets | Go-Linking',
   robots: { index: false, follow: false },
 };
+
 export default async function QRAssets({
   params,
 }: {
   params: Promise<{ brand: string }>;
 }) {
-  const brand = getBrand((await params).brand);
+  const record = await brandService.published((await params).brand);
+  const brand = record && renderBrand(record);
   if (!brand) notFound();
+
   const settings = siteSettings();
   const master = getPublicBrandUrl(brand.slug, settings);
   const assets = [
@@ -33,6 +41,7 @@ export default async function QRAssets({
         : [];
     }),
   ];
+
   return (
     <div className="assets-shell">
       <main id="main">
