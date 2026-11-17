@@ -4,6 +4,7 @@ import { brands, getBrand, isUsableDestination } from '@/config/brands';
 import { BrandShell } from '@/components/BrandShell';
 import { BrandHeader } from '@/components/BrandHeader';
 import { DestinationCard } from '@/components/DestinationCard';
+import { getPublicBrandUrl } from '@/lib/site';
 
 export function generateStaticParams() {
   return brands.map((brand) => ({ brand: brand.slug }));
@@ -20,12 +21,12 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `/${brand.slug}` },
+    alternates: { canonical: getPublicBrandUrl(brand.slug) },
     openGraph: {
       title,
       description,
       type: 'website',
-      url: `/${brand.slug}`,
+      url: getPublicBrandUrl(brand.slug),
       siteName: brand.name,
     },
   };
@@ -64,7 +65,7 @@ export default async function BrandHub({
               <DestinationCard
                 key={destination.id}
                 destination={destination}
-                logo={brand.logo}
+                brand={brand}
                 themedIcons={brand.experience !== 'food'}
                 index={index}
               />

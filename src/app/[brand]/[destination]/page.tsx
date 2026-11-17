@@ -4,6 +4,7 @@ import {
   brands,
   getBrand,
   getDestination,
+  getDestinationUrl,
   isUsableDestination,
 } from '@/config/brands';
 type Params = Promise<{ brand: string; destination: string }>;
@@ -27,7 +28,7 @@ export async function generateMetadata({
     ? {
         title: `${link.title} | ${brand.name}`,
         description: link.description,
-        alternates: { canonical: link.url },
+        alternates: { canonical: getDestinationUrl(brand, route.destination) },
       }
     : {};
 }
@@ -35,7 +36,7 @@ export default async function DestinationRoute({ params }: { params: Params }) {
   const route = await params;
   const brand = getBrand(route.brand);
   if (!brand) notFound();
-  const destination = getDestination(brand, route.destination);
-  if (!destination) notFound();
-  redirect(destination.url);
+  const url = getDestinationUrl(brand, route.destination);
+  if (!url) notFound();
+  redirect(url);
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getBrand, isUsableDestination } from '@/config/brands';
-import { masterUrl, siteSettings } from '@/lib/site';
+import { getBrand, getDestinationUrl } from '@/config/brands';
+import { getPublicBrandUrl, hubPath, siteSettings } from '@/lib/site';
 import { QRCodeCard } from '@/components/QRCodeCard';
 import { Footer } from '@/components/Footer';
 export const metadata: Metadata = {
@@ -17,19 +17,26 @@ export default async function QRAssets({
   const brand = getBrand((await params).brand);
   if (!brand) notFound();
   const settings = siteSettings();
-  const master = masterUrl(brand.slug);
+  const master = getPublicBrandUrl(brand.slug, settings);
   const assets = [
     { id: 'master', title: 'Master hub', url: master },
-    ...brand.links.filter(isUsableDestination).map((link) => ({
-      id: link.kind === 'review' ? 'google-review' : link.id,
-      title: link.title,
-      url: link.url,
-    })),
+    ...brand.links.flatMap((link) => {
+      const url = getDestinationUrl(brand, link.id);
+      return url
+        ? [
+            {
+              id: link.kind === 'review' ? 'google-review' : link.id,
+              title: link.title,
+              url,
+            },
+          ]
+        : [];
+    }),
   ];
   return (
     <div className="assets-shell">
       <main id="main">
-        <Link className="text-button" href={`/${brand.slug}`}>
+        <Link className="text-button" href={hubPath(brand.slug)}>
           ← Back to {brand.name}
         </Link>
         <p className="eyebrow">GO-LINKING · STAFF UTILITY</p>

@@ -4,7 +4,7 @@ One codebase, one deployment, one dedicated smart page and master QR/NFC URL per
 
 ## Local development and QA
 
-Use the existing Node.js 20.9+ dependencies (`npm ci` for a fresh checkout), then `npm run dev`. Run `npm test`, `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`, and `npm run test:e2e`. Browser tests use installed Edge and a production server. Set `PLAYWRIGHT_PORT` to select a free QA port or `PLAYWRIGHT_CHANNEL=chrome` for installed Chrome. Tests intercept outbound destinations; no third-party submissions occur.
+Use the existing Node.js 20.9+ dependencies (`npm ci` for a fresh checkout), then `npm run dev`. Run `npm test`, `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`, and `npm run test:e2e`. Browser tests use installed Edge and a fresh production server, and expect the canonical production share origin even though the server itself runs on localhost. Set `PLAYWRIGHT_PORT` to select a free QA port or `PLAYWRIGHT_CHANNEL=chrome` for installed Chrome. To exercise local development, use `PLAYWRIGHT_SERVER_MODE=development npm run test:e2e`; this starts a dev server with a matching local share origin. Tests intercept outbound destinations; no third-party submissions occur.
 
 ## Routes and shared engine
 
@@ -16,9 +16,9 @@ Use the existing Node.js 20.9+ dependencies (`npm ci` for a fresh checkout), the
 - `/qr/<brand>`: public, noindex staff utility with master and usable destination QR assets.
 - Unknown brands, unknown destinations and disabled destinations return the existing 404.
 
-`src/config/brands.ts` is the registry and validation layer. Each client has one file in `src/config/brands/`, using the shared `Brand` and `Destination` types in `types.ts`. The dynamic brand route, `BrandShell`, `BrandHeader`, `DestinationCard`, `LinkActions`, and common `Footer` implement the shared experience.
+`src/config/brands.ts` is the registry and validation layer. `getDestinationUrl(brand, destinationId)` returns only a usable configured destination, preserving the original URL string exactly. Destination cards, copy actions, staff QR assets and compatibility redirects all use this resolver. Each client has one file in `src/config/brands/`, using the shared `Brand` and `Destination` types in `types.ts`. The dynamic brand route, `BrandShell`, `BrandHeader`, `DestinationCard`, `LinkActions`, and common `Footer` implement the shared experience.
 
-A brand defines slug, name, category, tagline, logo path, hero copy, theme colors, links, decorative asset paths (`decor`), and the animation preset (`experience`). Links define id, icon kind, title, description, exact URL, open labels and optional `disabled`. Usable URLs are HTTPS or telephone destinations. Empty/disabled entries never produce anchors, QR codes or redirects. Mozza keeps its original platform icons. Elevator/Tuition use lightweight theme-colored SVG icons from the same `Icon.tsx` component. Placeholder clients render the same destination cards with a Coming soon label; no QR/Copy/Open action is created until a verified usable URL is enabled.
+A brand defines slug, name, category, tagline, logo path, hero copy, theme colors, links, decorative asset paths (`decor`), and the animation preset (`experience`). Links define id, icon kind, title, description, exact URL, open labels and optional `disabled`. Usable URLs are public HTTPS or validated telephone destinations. Relative URLs, credentials, unsafe schemes and local/private/example HTTPS hosts are rejected. Empty/disabled entries never produce anchors, QR codes or redirects. Mozza keeps its original platform icons. Elevator/Tuition use lightweight theme-colored SVG icons from the same `Icon.tsx` component. Placeholder clients render the same destination cards with a Coming soon label; no QR/Copy/Open action is created until a verified usable URL is enabled.
 
 ## Add a fourth client
 
@@ -48,11 +48,21 @@ QR opens a native modal dialog: centered on desktop, bottom sheet on phones. Nat
 
 ## Master QR and NFC safety
 
-Configure `NEXT_PUBLIC_SITE_URL` with the actual deployment origin before building. Master URLs are exactly `${NEXT_PUBLIC_SITE_URL}/<brand-slug>`. They never encode the directory route. Physical client QR/NFC cards should directly use these brand URLs.
+`src/lib/site.ts` owns `getPublicBrandUrl(slug)` and the public origin policy. Master QRs, copied brand links and brand metadata use this resolver. The directory's Open brand action remains an internal link. Master URLs never encode the directory route or an external business destination.
 
-Development falls back to `http://localhost:3000`; this is preview only. Master downloads are disabled for missing origins, HTTP, localhost, private and example domains. Destination QR downloads are independent of the master origin. A public HTTPS origin enables master download but does not prove the deployment is live.
+Set **`NEXT_PUBLIC_SITE_URL=https://go-linking.vercel.app` in both Vercel Production and Preview before building**. Remove any localhost value from those environments and rebuild the deployment: Next.js can embed public environment variables and prerendered links at build time. Do not include a path, query, fragment or credentials. There is no need to set `VERCEL_URL` or `VERCEL_PROJECT_PRODUCTION_URL`; neither is used as a share origin. Request `Host` and forwarded-host headers are never trusted for URL generation.
 
-**Production master QR becomes print-ready only after the live deployment domain is configured, rebuilt, and verified on a phone.** Scan a physical proof before printing in bulk. Localhost on a phone refers to the phone itself. NFC tags use the same master URL; destination updates then need only a configuration change and deployment.
+| Environment                                                   | Missing `NEXT_PUBLIC_SITE_URL`                                           | Explicit configuration                                                                                             |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Production (`NODE_ENV=production` or `VERCEL_ENV=production`) | Stable `https://go-linking.vercel.app` fallback                          | Must be a public HTTPS origin; invalid/local/private/HTTP values fail the build/request with a configuration error |
+| Vercel Preview (`VERCEL_ENV=preview`)                         | Same stable production origin, regardless of preview deployment hostname | Same public HTTPS validation; use the canonical production setting above                                           |
+| Local development/test                                        | `http://localhost:3000`                                                  | Local HTTP origins and custom ports are allowed; local master downloads remain disabled                            |
+
+The production fallback is intentional and deterministic: missing configuration cannot silently create a localhost QR. Explicit invalid configuration is rejected instead of hidden. Local development with `npm run dev` remains functional; set a local-only `.env.local` value such as `http://localhost:3000` if you copied the production-oriented `.env.example`. A production build on a developer machine follows production rules too.
+
+External destination QRs, copies and clicks use their exact configured URL, independent of the Go-Linking origin. They do not go through a Go-Linking redirect. Existing `/<brand>/<destination>` routes remain compatible and redirect only to configured usable destinations; query parameters cannot override their target. For Mozza Italia the master payload is `https://go-linking.vercel.app/mozza-italia`, while the Website payload is exactly `https://www.mozzaitalia.com` (no added slash). Google Reviews, Instagram and WhatsApp likewise retain their configured paths and query encoding.
+
+A public HTTPS origin enables master downloads but does not prove the deployment is live. Verify the deployed hub and a physical QR proof on a phone before printing in bulk. NFC tags use the same master URL; destination updates then need only a configuration change and deployment.
 
 No authentication, database, analytics, tracking, cookies, signup or marketing collection is included. Nothing is deployed by these changes.
 

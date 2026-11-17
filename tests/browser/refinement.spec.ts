@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { brands } from '../../src/config/brands';
+import { expectedBrandUrl } from './qr-helpers';
 
 for (const width of [390, 1280])
   test(`entire company cards and keyboard navigation work at ${width}`, async ({
@@ -91,7 +92,7 @@ test('directory controls remain independent with keyboard and reduced motion', a
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL('/');
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-      `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/${brand.slug}`,
+      expectedBrandUrl(brand.slug),
     );
     const qr = page.getByRole('button', {
       name: `QR for ${brand.name}`,

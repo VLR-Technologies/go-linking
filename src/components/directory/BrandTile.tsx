@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Brand } from '@/config/brands';
-import { masterUrl } from '@/lib/site';
+import { getPublicBrandUrl, hubPath } from '@/lib/site';
 import { LinkActions } from '@/components/LinkActions';
 
 export function BrandTile({
@@ -38,7 +38,7 @@ export function BrandTile({
         <div className="company-controls">
           <Link
             className="company-open"
-            href={`/${brand.slug}`}
+            href={hubPath(brand.slug)}
             aria-label={`Open ${brand.name}`}
           >
             Open brand <span aria-hidden="true">↗</span>
@@ -46,7 +46,7 @@ export function BrandTile({
           <div className="card-actions">
             <LinkActions
               title={brand.name}
-              url={masterUrl(brand.slug)}
+              url={getPublicBrandUrl(brand.slug)}
               logo={brand.logo}
               filename={`${brand.slug}-master-qr.png`}
               allowDownload={allowDownload}

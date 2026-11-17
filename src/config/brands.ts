@@ -2,6 +2,7 @@ import type { Brand, Destination } from './brands/types';
 import { mozzaItalia } from './brands/mozza-italia';
 import { elevatorCompany } from './brands/elevator-company';
 import { tuitionClasses } from './brands/tuition-classes';
+import { isPublicHttpsUrl } from '../lib/url-validation';
 export type { Brand, Destination } from './brands/types';
 export const brands: Brand[] = [mozzaItalia, elevatorCompany, tuitionClasses];
 export function isUsableDestination(link: Destination) {
@@ -11,7 +12,7 @@ export function isUsableDestination(link: Destination) {
     return (
       !url.username &&
       !url.password &&
-      (url.protocol === 'https:' ||
+      (isPublicHttpsUrl(link.url) ||
         (url.protocol === 'tel:' &&
           /^tel:\+?[0-9][0-9 ()-]{4,}$/.test(link.url)))
     );
@@ -57,3 +58,7 @@ export const getBrand = (slug: string) =>
   brands.find((brand) => brand.slug === slug);
 export const getDestination = (brand: Brand, id: string) =>
   brand.links.find((link) => link.id === id && isUsableDestination(link));
+// Return the configured bytes, not URL.href: serialization can add slashes or
+// change escaping in approved business URLs and WhatsApp prefilled messages.
+export const getDestinationUrl = (brand: Brand, id: string) =>
+  getDestination(brand, id)?.url;
