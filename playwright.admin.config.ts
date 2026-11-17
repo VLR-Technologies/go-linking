@@ -12,7 +12,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3116',
     browserName: 'chromium',
-    launchOptions: { channel: 'msedge' },
+    launchOptions: { channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge' },
     screenshot: 'only-on-failure',
   },
   webServer: {

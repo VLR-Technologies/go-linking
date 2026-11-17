@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
 import {
@@ -21,6 +21,7 @@ import {
 } from '../src/lib/product/color-suggestions';
 import { seedBrands } from '../src/lib/product/seed';
 import { brands } from '../src/config/brands';
+import { getDestinationUrl } from '../src/config/brands';
 const valid = () => ({
   ...emptyBrand(),
   name: 'ABC Hospital',
@@ -42,6 +43,9 @@ const valid = () => ({
   ],
 });
 async function repository() {
+  await mkdir(path.join(process.cwd(), '.npm-cache/product-qa'), {
+    recursive: true,
+  });
   const directory = await mkdtemp(
     path.join(process.cwd(), '.npm-cache/product-qa/store-'),
   );
@@ -145,6 +149,41 @@ test('seed presentation preserves every existing brand field and exact link URL'
     );
   }
 });
+test('dynamic rendered brands resolve exact external targets for QR, copy and redirects', () => {
+  const record = renderBrand(
+    seedBrands().find((brand) => brand.slug === 'mozza-italia')!,
+  );
+  assert.equal(
+    getDestinationUrl(record, 'website'),
+    'https://www.mozzaitalia.com',
+  );
+  assert.equal(
+    getDestinationUrl(record, 'review'),
+    'https://g.page/r/CbxmdpzE3rO4EBM/review',
+  );
+  assert.equal(
+    getDestinationUrl(record, 'instagram'),
+    'https://www.instagram.com/italia.mozza',
+  );
+  assert.equal(getDestinationUrl(record, 'whatsapp'), brands[0].links[3].url);
+
+  const dynamicRecord = validateInput({
+    ...valid(),
+    name: 'Mozza Italia QA',
+    slug: 'mozza-italia-qa',
+    links: [
+      {
+        ...valid().links[0],
+        url: 'https://www.mozzaitalia.com/menu?source=qr&offer=summer%2Fmenu',
+      },
+    ],
+  });
+  const dynamicBrand = renderBrand(dynamicRecord);
+  assert.equal(
+    getDestinationUrl(dynamicBrand, 'website'),
+    'https://www.mozzaitalia.com/menu?source=qr&offer=summer%2Fmenu',
+  );
+});
 test('safe URL normalization supports HTTP(S), phone, email and WhatsApp', () => {
   assert.equal(
     normalizeLink('website', 'http://example.com'),
@@ -164,8 +203,11 @@ test('safe URL normalization supports HTTP(S), phone, email and WhatsApp', () =>
       'whatsapp',
       'https://api.whatsapp.com/send?phone=919876543210&text=Hi',
     ),
-    'https://wa.me/919876543210?text=Hi',
+    'https://api.whatsapp.com/send?phone=919876543210&text=Hi',
   );
+  const exactWhatsApp =
+    'https://wa.me/919876543210/?text=Hi%20there%2C%20book%20a%20table&source=qr';
+  assert.equal(normalizeLink('whatsapp', exactWhatsApp), exactWhatsApp);
   for (const url of [
     'javascript:alert(1)',
     'data:text/html,x',
@@ -174,6 +216,14 @@ test('safe URL normalization supports HTTP(S), phone, email and WhatsApp', () =>
     'https://user:pass@example.com',
   ])
     assert.throws(() => normalizeLink('custom', url));
+  for (const url of [
+    'https://localhost:3000',
+    'http://127.0.0.1/',
+    'https://192.168.1.20/',
+    'https://10.0.0.2/',
+    'https://[::1]/',
+  ])
+    assert.throws(() => normalizeLink('website', url));
   assert.throws(() => normalizeLink('instagram', 'https://notinstagram.com'));
   assert.throws(() => normalizeLink('email', 'bad@example.com?subject=test'));
 });

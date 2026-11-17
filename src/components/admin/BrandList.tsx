@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { BrandRecord } from '@/lib/product/model';
 import { LinkActions } from '../LinkActions';
-import { masterUrl } from '@/lib/site';
+import { getPublicBrandUrl } from '@/lib/site';
 export function BrandList({ initial }: { initial: BrandRecord[] }) {
   const [brands, setBrands] = useState(initial),
     [search, setSearch] = useState(''),
@@ -99,7 +99,7 @@ export function BrandList({ initial }: { initial: BrandRecord[] }) {
                 </Link>
                 <Link href={`/admin/qr?brand=${b.id}`}>QR assets</Link>
                 <LinkActions
-                  url={masterUrl(b.slug)}
+                  url={getPublicBrandUrl(b.slug)}
                   title={b.name}
                   filename={`${b.slug}-development-qr.png`}
                   notice="Development QR — not for printing"

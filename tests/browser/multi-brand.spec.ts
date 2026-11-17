@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import jsQR from 'jsqr';
-import { PNG } from 'pngjs';
 import { brands } from '../../src/config/brands';
+import {
+  decodeQrDownload,
+  decodeQrSource,
+  expectedBrandUrl,
+  localMaster,
+} from './qr-helpers';
 
 for (const width of [390, 430, 768, 1024, 1280, 1440]) {
   for (const path of ['/', ...brands.map((brand) => `/${brand.slug}`)]) {
@@ -48,11 +52,6 @@ for (const width of [390, 430, 768, 1024, 1280, 1440]) {
   }
 }
 
-async function decode(source: string) {
-  const png = PNG.sync.read(Buffer.from(source.split(',')[1], 'base64'));
-  return jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data;
-}
-
 for (const width of [390, 1280]) {
   test(`all card actions, decoded QRs, downloads and focus at ${width}`, async ({
     page,
@@ -89,7 +88,9 @@ for (const width of [390, 1280]) {
       ).toBeFocused();
       await expect(dialog.locator('.modal-qr')).toBeVisible();
       expect(
-        await decode((await dialog.locator('.modal-qr').getAttribute('src'))!),
+        decodeQrSource(
+          (await dialog.locator('.modal-qr').getAttribute('src'))!,
+        ),
       ).toBe(link.url);
       await page.keyboard.press('Shift+Tab');
       expect(
@@ -99,9 +100,11 @@ for (const width of [390, 1280]) {
             ?.contains(document.activeElement),
         ),
       ).toBe(true);
-      const download = page.waitForEvent('download');
+      const downloadPromise = page.waitForEvent('download');
       await dialog.getByRole('link', { name: 'Download QR' }).click();
-      expect((await download).suggestedFilename()).toBe(`${link.id}-qr.png`);
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe(`${link.id}-qr.png`);
+      expect(await decodeQrDownload(download)).toBe(link.url);
       await dialog
         .getByRole('button', { name: 'Copy Link', exact: true })
         .click();
@@ -143,7 +146,7 @@ test('directory master actions and internal navigation', async ({
       .getByRole('button', { name: `Copy ${brand.name} link`, exact: true })
       .click();
     await expect(page).toHaveURL('/');
-    const expected = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/${brand.slug}`;
+    const expected = expectedBrandUrl(brand.slug);
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       expected,
     );
@@ -154,12 +157,27 @@ test('directory master actions and internal navigation', async ({
     await expect(page).toHaveURL('/');
     await expect(dialog.locator('.modal-qr')).toBeVisible();
     expect(
-      await decode((await dialog.locator('.modal-qr').getAttribute('src'))!),
+      decodeQrSource((await dialog.locator('.modal-qr').getAttribute('src'))!),
     ).toBe(expected);
-    await expect(dialog.getByText(/Preview only/)).toBeVisible();
-    await expect(dialog.getByRole('link', { name: 'Download QR' })).toHaveCount(
-      0,
-    );
+    if (localMaster) {
+      await expect(dialog.getByText(/Preview only/)).toBeVisible();
+      await expect(
+        dialog.getByRole('link', { name: 'Download QR' }),
+      ).toHaveCount(0);
+    } else {
+      expect(expected).not.toContain('localhost');
+      const downloadPromise = page.waitForEvent('download');
+      await dialog.getByRole('link', { name: 'Download QR' }).click();
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe(`${brand.slug}-master-qr.png`);
+      expect(await decodeQrDownload(download)).toBe(expected);
+      await dialog
+        .getByRole('button', { name: 'Copy Link', exact: true })
+        .click();
+      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+        expected,
+      );
+    }
     await dialog.getByRole('button', { name: 'Close QR dialog' }).click();
     await row
       .getByRole('link', { name: `Open ${brand.name}`, exact: true })

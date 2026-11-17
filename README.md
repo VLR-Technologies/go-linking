@@ -37,7 +37,15 @@ PNG/JPEG/WebP uploads are bounded and validated; SVG uploads are rejected. Asset
 
 Public QR/Copy/Open actions remain independent. QR uses the exact destination, black modules on white and a four-module quiet zone. PNG output is 1024px. Admin also offers SVG downloads. Copy announces success with a fixed toast and provides manual fallback if clipboard access fails.
 
-Set `NEXT_PUBLIC_SITE_URL` to the actual local origin, including the port. A master QR and NFC tag use the same `origin/slug` URL. Admin development downloads are explicitly labeled **Development QR — not for printing**. Existing public master-download safeguards remain. Production printing requires real production adapters, final HTTPS origin, verified deployment and physical QR/NFC testing.
+`src/lib/site.ts` is the single public-origin resolver. Directory, brand metadata and QR tools use `getPublicBrandUrl(slug)` for master links; internal navigation continues to use a relative brand path. Production and Vercel Preview default to `https://go-linking.vercel.app`. If `NEXT_PUBLIC_SITE_URL` is explicitly set there, it must be a clean public HTTPS origin. Request and forwarded-host headers are never used to build QR or share URLs.
+
+For local development, set `NEXT_PUBLIC_SITE_URL` to the actual local origin and port in ignored `.env.local`, for example `http://localhost:3000`. A public master QR download stays disabled for local/private origins. The `.env.example` localhost value is for local development only; do not configure that value in Vercel. Set **`NEXT_PUBLIC_SITE_URL=https://go-linking.vercel.app` in both Vercel Production and Preview**, then rebuild. Next.js may inline public environment variables and generated metadata during the build. If the variable is absent in production or preview, the resolver uses the same canonical production origin rather than localhost.
+
+Dynamic routes keep using `brandService` and the selected provider. Published records are converted through `renderBrand`; unpublished, archived and unknown brands still return 404. `src/config/brands.ts` remains the initial seed and read-only production fallback. Its shared `getDestinationUrl(brand, id)` validates each enabled destination and returns the original configured string without URL serialization. The admin editor uses the same public-web URL checks. Supported destinations include public HTTP(S), telephone, email and the configured WhatsApp URL formats; local/private HTTP(S) destinations and unsafe schemes are rejected.
+
+Public destination cards, their copy actions, the public QR utility, admin QR assets and compatibility redirects all consume the validated configured URL. Business links open directly and QR images encode the same URL. Existing `/<brand>/<destination>` routes remain available and cannot be redirected by a query parameter. Mozza Italia's master payload is `https://go-linking.vercel.app/mozza-italia`; the Website target is exactly `https://www.mozzaitalia.com`. Google Reviews, Instagram and WhatsApp retain their exact configured paths and query values, including the prefilled message.
+
+Admin development downloads remain labeled **Development QR — not for printing**. A configured HTTPS domain does not confirm that the deployment is live. Verify the deployed brand on a phone and test a physical QR/NFC proof before printing.
 
 ## Checks
 
@@ -46,4 +54,4 @@ Set `NEXT_PUBLIC_SITE_URL` to the actual local origin, including the port. A mas
 - `npm run build` then `npm run test:e2e`: existing public regressions plus production fail-closed checks. Set `PLAYWRIGHT_PORT` to use a free port.
 - `npm run lint`, `npm run typecheck`, `npm run format:check`.
 
-Browser tests use installed Microsoft Edge. See [QA report](QA.md) for results and practical limits. No package was installed or dependency version changed in this phase.
+Browser tests default to installed Microsoft Edge; this merge run used installed Chrome through `PLAYWRIGHT_CHANNEL=chrome`. See the [product QA report](QA.md) and [PR #6 merge and QR verification](QR_FIX_QA.md) for results and practical limits. No package version was changed in this merge resolution.

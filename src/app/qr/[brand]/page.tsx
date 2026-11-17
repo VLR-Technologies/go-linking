@@ -1,17 +1,20 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { isUsableDestination } from '@/config/brands';
+import { getDestinationUrl } from '@/config/brands';
+import { Footer } from '@/components/Footer';
+import { QRCodeCard } from '@/components/QRCodeCard';
 import { brandService } from '@/lib/product/providers';
 import { renderBrand } from '@/lib/product/model';
+import { getPublicBrandUrl, hubPath, siteSettings } from '@/lib/site';
+
 export const dynamic = 'force-dynamic';
-import { masterUrl, siteSettings } from '@/lib/site';
-import { QRCodeCard } from '@/components/QRCodeCard';
-import { Footer } from '@/components/Footer';
+
 export const metadata: Metadata = {
   title: 'QR Assets | Go-Linking',
   robots: { index: false, follow: false },
 };
+
 export default async function QRAssets({
   params,
 }: {
@@ -20,20 +23,29 @@ export default async function QRAssets({
   const record = await brandService.published((await params).brand);
   const brand = record && renderBrand(record);
   if (!brand) notFound();
+
   const settings = siteSettings();
-  const master = masterUrl(brand.slug);
+  const master = getPublicBrandUrl(brand.slug, settings);
   const assets = [
     { id: 'master', title: 'Master hub', url: master },
-    ...brand.links.filter(isUsableDestination).map((link) => ({
-      id: link.kind === 'review' ? 'google-review' : link.id,
-      title: link.title,
-      url: link.url,
-    })),
+    ...brand.links.flatMap((link) => {
+      const url = getDestinationUrl(brand, link.id);
+      return url
+        ? [
+            {
+              id: link.kind === 'review' ? 'google-review' : link.id,
+              title: link.title,
+              url,
+            },
+          ]
+        : [];
+    }),
   ];
+
   return (
     <div className="assets-shell">
       <main id="main">
-        <Link className="text-button" href={`/${brand.slug}`}>
+        <Link className="text-button" href={hubPath(brand.slug)}>
           ← Back to {brand.name}
         </Link>
         <p className="eyebrow">GO-LINKING · STAFF UTILITY</p>

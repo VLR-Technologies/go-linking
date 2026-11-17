@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { BrandPage } from '@/components/BrandPage';
 import { brandService } from '@/lib/product/providers';
 import { renderBrand } from '@/lib/product/model';
-import { BrandPage } from '@/components/BrandPage';
+import { getPublicBrandUrl } from '@/lib/site';
+
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
@@ -15,19 +17,21 @@ export async function generateMetadata({
   if (!brand) return {};
   const title = `${brand.name} | Quick Links`;
   const description = brand.copy.description;
+  const url = getPublicBrandUrl(brand.slug);
   return {
     title,
     description,
-    alternates: { canonical: `/${brand.slug}` },
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
       type: 'website',
-      url: `/${brand.slug}`,
+      url,
       siteName: brand.name,
     },
   };
 }
+
 export default async function BrandHub({
   params,
 }: {

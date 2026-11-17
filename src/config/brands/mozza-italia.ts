@@ -47,7 +47,7 @@ export const mozzaItalia: Brand = {
       title: 'Instagram',
       description: 'Get updates, offers & coupons',
       handle: '@italia.mozza',
-      url: 'https://www.instagram.com/italia.mozza/',
+      url: 'https://www.instagram.com/italia.mozza',
       cta: 'Open Instagram',
       cardCta: 'Open Instagram',
     },

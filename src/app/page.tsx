@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { brandService } from '@/lib/product/providers';
 import { renderBrand } from '@/lib/product/model';
-export const dynamic = 'force-dynamic';
 import { siteSettings } from '@/lib/site';
 import { Footer } from '@/components/Footer';
 import { VlrLockup } from '@/components/VlrLockup';
@@ -11,6 +10,8 @@ import { ConnectedHero } from '@/components/directory/ConnectedHero';
 import { ConnectionMark } from '@/components/directory/ConnectionMark';
 import { uiFont } from './fonts';
 import './directory-experience.css';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Go-Linking — One Link. Endless Connections. | VLR Technologies',

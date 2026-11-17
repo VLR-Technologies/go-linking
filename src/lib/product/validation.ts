@@ -7,6 +7,7 @@ import {
   type BrandRecord,
   type LinkType,
 } from './model';
+import { isPublicWebUrl } from '../url-validation';
 export class ProductError extends Error {
   constructor(
     message: string,
@@ -53,12 +54,7 @@ export function normalizeLink(type: LinkType, value: string): string {
   } catch {
     throw new ProductError('Enter a complete http:// or https:// URL.');
   }
-  if (
-    !['https:', 'http:'].includes(url.protocol) ||
-    url.username ||
-    url.password ||
-    /[\u0000-\u0020]/.test(raw)
-  )
+  if (!isPublicWebUrl(raw))
     throw new ProductError(
       'Only safe HTTP(S) URLs without credentials are allowed.',
     );
@@ -78,11 +74,11 @@ export function normalizeLink(type: LinkType, value: string): string {
   if (type === 'whatsapp') {
     const phone =
       url.hostname === 'wa.me'
-        ? url.pathname.slice(1)
+        ? /^\/(\+?[1-9][0-9]{6,14})\/?$/.exec(url.pathname)?.[1]
         : url.searchParams.get('phone');
     if (!phone || !/^\+?[1-9][0-9]{6,14}$/.test(phone))
       throw new ProductError('WhatsApp URL must include a valid phone number.');
-    return `https://wa.me/${phone.replace('+', '')}${url.searchParams.has('text') ? `?text=${encodeURIComponent(url.searchParams.get('text')!)}` : ''}`;
+    return raw;
   }
   return raw;
 }

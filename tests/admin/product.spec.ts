@@ -2,7 +2,18 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PNG } from 'pngjs';
 import jsQR from 'jsqr';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 const origin = 'http://localhost:3116';
+test.beforeAll(async () => {
+  await mkdir(path.join(process.cwd(), '.npm-cache/product-qa'), {
+    recursive: true,
+  });
+});
+function decodeQr(source: string) {
+  const png = PNG.sync.read(Buffer.from(source.split(',')[1], 'base64'));
+  return jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data;
+}
 async function login(page: import('@playwright/test').Page) {
   await page.goto('/admin/login');
   await page
@@ -179,16 +190,37 @@ test('complete onboarding: upload, palette, links, live preview, persistence, pu
   ).toBeVisible();
   const master = page.locator('.admin-qr-asset').first();
   const image = await master.getByRole('img').getAttribute('src');
-  const png = PNG.sync.read(Buffer.from(image!.split(',')[1], 'base64'));
-  expect(
-    jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data,
-  ).toBe(`${origin}/${slug}`);
+  expect(decodeQr(image!)).toBe(`${origin}/${slug}`);
   await master
     .getByRole('button', { name: `Copy ${name} master link` })
     .click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     `${origin}/${slug}`,
   );
+  const published = await (
+    await page.request.get('/api/admin/brands/' + editURL.split('/').at(-1))
+  ).json();
+  const website = published.links.find(
+    (link: { label: string }) => link.label === 'Website',
+  );
+  if (!website) throw new Error('Published website link is missing');
+  expect(website.url).toBe('https://example.com/health');
+  const websiteAsset = page.locator('.admin-qr-asset').filter({
+    has: page.getByRole('heading', { name: 'Website', exact: true }),
+  });
+  const websiteImage = await websiteAsset.getByRole('img').getAttribute('src');
+  expect(decodeQr(websiteImage!)).toBe(website.url);
+  await websiteAsset
+    .getByRole('button', { name: 'Copy Website link', exact: true })
+    .click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    'https://example.com/health',
+  );
+  const redirect = await page.request.get(`/${slug}/${website.id}`, {
+    maxRedirects: 0,
+  });
+  expect(redirect.status()).toBe(307);
+  expect(redirect.headers().location).toBe(website.url);
   for (const format of ['PNG', 'SVG']) {
     const download = page.waitForEvent('download');
     await master.getByRole('link', { name: `Download ${format}` }).click();
@@ -211,6 +243,17 @@ test('complete onboarding: upload, palette, links, live preview, persistence, pu
   await expect(
     page.getByRole('link', { name: 'Open WhatsApp', exact: true }),
   ).toHaveAttribute('href', 'https://wa.me/919876543210');
+  const publicWebsite = page.getByRole('link', {
+    name: 'Open Website',
+    exact: true,
+  });
+  await expect(publicWebsite).toHaveAttribute('href', website.url);
+  await page.route(website.url, (route) =>
+    route.fulfill({ body: 'Verified configured destination' }),
+  );
+  await publicWebsite.click();
+  await expect(page).toHaveURL(website.url);
+  await page.goto(`/${slug}`);
   await page.goto('/');
   await expect(
     page.getByRole('link', { name: `Open ${name}`, exact: true }),
@@ -250,7 +293,15 @@ test('server-side validation rejects duplicate slugs, unsafe links and malformed
     data: { ...b, id: '', logo: '', fallbackApproved: true },
   });
   expect(duplicate.status()).toBe(409);
-  for (const url of ['javascript:x', 'data:text/html,x', 'file:///x']) {
+  for (const url of [
+    'javascript:x',
+    'data:text/html,x',
+    'file:///x',
+    'http://localhost:3000',
+    'https://127.0.0.1/',
+    'https://192.168.1.20/',
+    'https://[::1]/',
+  ]) {
     const r = await page.request.post('/api/admin/brands', {
       headers: { Origin: origin },
       data: {

@@ -1,8 +1,12 @@
-import type { Destination } from '@/config/brands';
+import { getDestinationUrl, type Brand } from '@/config/brands';
 import { CopyLinkButton } from './CopyLinkButton';
 import { CopyIcon } from './CopyIcon';
 
-export function CopyLinks({ links }: { links: Destination[] }) {
+export function CopyLinks({ brand }: { brand: Brand }) {
+  const links = brand.links.flatMap((link) => {
+    const url = getDestinationUrl(brand, link.id);
+    return url ? [{ ...link, url }] : [];
+  });
   return (
     <details className="copy-links">
       <summary>

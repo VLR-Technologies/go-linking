@@ -1,24 +1,24 @@
 import { LinkActions } from './LinkActions';
-import type { Destination } from '@/config/brands';
-import { isUsableDestination } from '@/config/brands';
+import type { Brand, Destination } from '@/config/brands';
+import { getDestinationUrl } from '@/config/brands';
 import type { CSSProperties } from 'react';
 import { Icon } from './Icon';
 export function DestinationCard({
   destination,
-  logo,
+  brand,
   themedIcons = false,
   index = 0,
 }: {
   destination: Destination;
-  logo?: string;
+  brand: Brand;
   themedIcons?: boolean;
   index?: number;
 }) {
-  const usable = isUsableDestination(destination);
+  const url = getDestinationUrl(brand, destination.id);
   return (
     <article
       className={`destination-card ${destination.kind}`}
-      data-disabled={!usable || undefined}
+      data-disabled={!url || undefined}
       style={{ '--card-index': index } as CSSProperties}
     >
       <span className="icon-badge">
@@ -44,17 +44,17 @@ export function DestinationCard({
         </h2>
         <p>{destination.description}</p>
       </div>
-      {usable ? (
+      {url ? (
         <div className="card-actions">
           <LinkActions
-            url={destination.url}
+            url={url}
             title={destination.title}
-            logo={logo}
+            logo={brand.logo}
             filename={`${destination.id}-qr.png`}
           />
           <a
             className="card-action open-action"
-            href={destination.url}
+            href={url}
             aria-label={destination.cta}
           >
             <svg

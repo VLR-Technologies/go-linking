@@ -2,7 +2,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import type { BrandRecord } from '@/lib/product/model';
-import { masterUrl } from '@/lib/site';
+import { getDestinationUrl } from '@/config/brands';
+import { renderBrand } from '@/lib/product/model';
+import { getPublicBrandUrl } from '@/lib/site';
 import { qrDataUrl } from '@/lib/qr';
 import QRCode from 'qrcode';
 import { LinkActions } from '../LinkActions';
@@ -80,6 +82,8 @@ export function QRAssets({
 }) {
   const [id, setId] = useState(selected || brands[0]?.id || '');
   const brand = brands.find((b) => b.id === id);
+  const renderedBrand = brand && renderBrand(brand);
+  const master = brand && getPublicBrandUrl(brand.slug);
   return (
     <>
       <div className="admin-notice">
@@ -99,11 +103,10 @@ export function QRAssets({
           </select>
         </label>
       )}
-      {brand ? (
+      {brand && renderedBrand && master ? (
         <>
           <p>
-            QR and NFC use the same public URL:{' '}
-            <code>{masterUrl(brand.slug)}</code>
+            QR and NFC use the same public URL: <code>{master}</code>
           </p>
           {brand.status !== 'published' && (
             <p className="admin-notice">
@@ -113,20 +116,23 @@ export function QRAssets({
           )}
           <div className="admin-qr-grid">
             <Asset
-              url={masterUrl(brand.slug)}
+              url={master}
               title={`${brand.name} master`}
               filename={`${brand.slug}-master-development`}
             />
-            {brand.links
-              .filter((l) => l.enabled && l.url)
-              .map((l) => (
-                <Asset
-                  key={l.id}
-                  url={l.url}
-                  title={l.label}
-                  filename={`${brand.slug}-${l.id}`}
-                />
-              ))}
+            {brand.links.flatMap((link) => {
+              const url = getDestinationUrl(renderedBrand, link.id);
+              return url
+                ? [
+                    <Asset
+                      key={link.id}
+                      url={url}
+                      title={link.label}
+                      filename={`${brand.slug}-${link.id}`}
+                    />,
+                  ]
+                : [];
+            })}
           </div>
         </>
       ) : (

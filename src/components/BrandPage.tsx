@@ -31,7 +31,7 @@ export function BrandPage({ brand }: { brand: Brand }) {
               <DestinationCard
                 key={destination.id}
                 destination={destination}
-                logo={brand.logo}
+                brand={brand}
                 themedIcons={brand.experience !== 'food'}
                 index={index}
               />

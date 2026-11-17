@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { brands } from '../../src/config/brands';
+import { expectedBrandUrl } from './qr-helpers';
 
 for (const width of [320, 390, 768, 1024, 1440]) {
   test(`premium homepage composition and CTA at ${width}`, async ({ page }) => {
@@ -222,7 +223,7 @@ test('homepage clipboard failure keeps the exact share link and returns focus', 
   });
   await copy.click();
   await expect(page.getByRole('textbox')).toHaveValue(
-    `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/${brands[0].slug}`,
+    expectedBrandUrl(brands[0].slug),
   );
   await expect(page).toHaveURL('/');
   await page.keyboard.press('Escape');
