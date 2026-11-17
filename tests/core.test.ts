@@ -19,7 +19,7 @@ const publicMaster = 'https://go-linking.vercel.app/mozza-italia';
 const expected = [
   'https://g.page/r/CbxmdpzE3rO4EBM/review',
   'https://www.mozzaitalia.com',
-  'https://www.instagram.com/italia.mozza',
+  'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw',
   'https://wa.me/919949799488?text=Hi%20Mozza%20Italia%2C%20I%20would%20like%20to%20place%20an%20order.',
 ];
 test('brand has required values and exact approved URLs', () => {
@@ -43,6 +43,11 @@ test('brand has required values and exact approved URLs', () => {
     'Hi Mozza Italia, I would like to place an order.',
   );
   assert.equal(hubPath(brand.slug), '/mozza-italia');
+  assert.equal(getDestination(brand, 'instagram')?.handle, '@mozza.italia1');
+  assert.equal(
+    getDestination(brand, 'instagram')?.description,
+    'Get updates, offers & coupons',
+  );
 });
 test('unknown destinations and brands cannot redirect', () => {
   assert.equal(getDestination(brands[0], 'https://evil.example'), undefined);
@@ -202,6 +207,11 @@ test('every destination resolver preserves the exact configured URL bytes', () =
 for (const url of [
   getPublicBrandUrl('mozza-italia', siteSettings('', development)),
   getPublicBrandUrl('mozza-italia', siteSettings('', production)),
+  ...brands
+    .slice(1)
+    .map((brand) =>
+      getPublicBrandUrl(brand.slug, siteSettings('', production)),
+    ),
   ...brands[0].links.map((link) => getDestinationUrl(brands[0], link.id)!),
 ]) {
   for (const size of [200, 250, 300, 1024])
@@ -214,6 +224,7 @@ for (const url of [
         png.height,
       );
       assert.equal(decoded?.data, url);
+      assert.notEqual(decoded?.data, 'https://go-linking.vercel.app');
       assert.equal(png.width, size);
       assert.deepEqual(
         Array.from(png.data.subarray(0, 4)),

@@ -4,7 +4,6 @@ import { Footer } from './Footer';
 import { displayFont, uiFont } from '@/app/fonts';
 import { BrandAnimation } from './BrandAnimation';
 import { FoodDecorations } from './FoodDecorations';
-import Link from 'next/link';
 export function BrandShell({
   brand,
   children,
@@ -31,9 +30,6 @@ export function BrandShell({
         } as CSSProperties
       }
     >
-      <Link className="brand-back" href="/" aria-label="Back to Go-Linking">
-        <span aria-hidden="true">←</span> All Brands
-      </Link>
       {(brand.animationPreset || brand.experience) === 'food' && (
         <FoodDecorations />
       )}

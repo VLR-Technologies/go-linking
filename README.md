@@ -23,6 +23,8 @@ Admin UI → protected HTTP endpoints → BrandService → BrandRepository. Asse
 
 Development stores versioned brand/link data and original uploads under ignored `.dev-data/`. Initial seeding is idempotent and preserves the exact existing Mozza, Elevator and Tuition configurations. The static configuration files remain the initial seed and read-only production fallback, not the onboarding mechanism for new local clients.
 
+Existing local stores receive a locked, atomic correction only for `seed-mozza-italia` at slug `mozza-italia` whose `instagram` link still has the obsolete `https://www.instagram.com/italia.mozza` target. It becomes `https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw`; the old `@italia.mozza` handle becomes `@mozza.italia1`. Custom URLs, custom handles, renamed brands, disabled states and all other fields are preserved. The update advances `updatedAt` to reject stale editor saves and does not re-seed the store. Production reads the updated seed directly, without a local migration.
+
 `BrandPage`, `BrandShell`, `BrandHeader`, `DestinationCard`, `LinkActions` and the VLR footer form the shared public engine. Existing food, education and engineering presentation is preserved. Reusable healthcare, real-estate, retail, network and minimal styles and animations support new clients. Animation can be disabled. Reduced motion is respected.
 
 ## Local safety and production boundary
@@ -45,12 +47,15 @@ Dynamic routes keep using `brandService` and the selected provider. Published re
 
 Public destination cards, their copy actions, the public QR utility, admin QR assets and compatibility redirects all consume the validated configured URL. Business links open directly and QR images encode the same URL. Existing `/<brand>/<destination>` routes remain available and cannot be redirected by a query parameter. Mozza Italia's master payload is `https://go-linking.vercel.app/mozza-italia`; the Website target is exactly `https://www.mozzaitalia.com`. Google Reviews, Instagram and WhatsApp retain their exact configured paths and query values, including the prefilled message.
 
+Public brand pages have no back-to-directory control. The homepage remains independently available at `/`. Mozza Italia's Instagram target is `https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw` (`@mozza.italia1`). A printed master QR encoding `https://go-linking.vercel.app/mozza-italia` can remain in use after deployment. A printed QR encoding the directory root, the old Instagram account directly, or another incorrect URL must be regenerated and reprinted; changing the application cannot change its encoded payload. Decode the physical standee before deciding which case applies.
+
 Admin development downloads remain labeled **Development QR — not for printing**. A configured HTTPS domain does not confirm that the deployment is live. Verify the deployed brand on a phone and test a physical QR/NFC proof before printing.
 
 ## Checks
 
 - `npm test`: existing QR/configuration tests and new repository/auth/upload/validation tests.
 - `npm run test:admin`: full local onboarding and responsive admin checks, with generated process-only credentials and isolated QA data/build output.
+- `PLAYWRIGHT_SITE_URL=https://go-linking.vercel.app npm run test:admin`: the same admin checks using canonical production QR/share destinations while serving the app locally.
 - `npm run build` then `npm run test:e2e`: existing public regressions plus production fail-closed checks. Set `PLAYWRIGHT_PORT` to use a free port.
 - `npm run lint`, `npm run typecheck`, `npm run format:check`.
 

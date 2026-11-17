@@ -11,6 +11,28 @@ import { randomUUID } from 'node:crypto';
 import type { BrandRepository } from './contracts';
 import type { BrandRecord } from './model';
 import { seedBrands } from './seed';
+import { mozzaItalia } from '@/config/brands/mozza-italia';
+
+function migrateLegacyMozzaInstagram(items: BrandRecord[]) {
+  const brand = items.find(
+    (item) => item.id === 'seed-mozza-italia' && item.slug === mozzaItalia.slug,
+  );
+  const link = brand?.links.find(
+    (item) =>
+      item.id === 'instagram' &&
+      item.type === 'instagram' &&
+      item.url === 'https://www.instagram.com/italia.mozza',
+  );
+  const official = mozzaItalia.links.find((item) => item.id === 'instagram');
+  if (!brand || !link || !official) return false;
+  // Only replace the obsolete seeded target; preserve admin customizations.
+  link.url = official.url;
+  if (link.handle === '@italia.mozza') link.handle = official.handle;
+  brand.updatedAt = new Date(
+    Math.max(Date.now(), Date.parse(brand.updatedAt) + 1),
+  ).toISOString();
+  return true;
+}
 
 export class LocalBrandRepository implements BrandRepository {
   constructor(private directory: string) {}
@@ -31,10 +53,13 @@ export class LocalBrandRepository implements BrandRepository {
     }
   }
   async list() {
-    // Initialization is serialized with writes; an existing file is never re-seeded.
+    // Initialization and targeted seed corrections share the write lock.
     try {
       await readFile(path.join(this.directory, 'brands.json'));
-      return structuredClone(await this.read());
+      const items = await this.read();
+      if (migrateLegacyMozzaInstagram(items))
+        return this.transact((items) => structuredClone(items));
+      return structuredClone(items);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
       return this.transact((items) => structuredClone(items));
@@ -57,6 +82,7 @@ export class LocalBrandRepository implements BrandRepository {
     const temporary = path.join(this.directory, `${randomUUID()}.tmp`);
     try {
       const items = await this.read();
+      migrateLegacyMozzaInstagram(items);
       const result = operation(items);
       await writeFile(
         temporary,

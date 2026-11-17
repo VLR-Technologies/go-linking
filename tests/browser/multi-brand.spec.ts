@@ -13,7 +13,14 @@ for (const width of [390, 430, 768, 1024, 1280, 1440]) {
     test(`${path} responsive and accessible at ${width}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      await page.goto(path);
+      const response = await page.goto(path);
+      expect(response?.status()).toBe(200);
+      if (path !== '/') {
+        await expect(
+          page.getByRole('link', { name: /All Brands|Back to Go-Linking/i }),
+        ).toHaveCount(0);
+        await expect(page.locator('.brand-shell a[href="/"]')).toHaveCount(0);
+      }
       await page.evaluate(() => document.fonts.ready);
       expect(
         await page.evaluate(
@@ -60,6 +67,15 @@ for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/mozza-italia');
+    await expect(
+      page.getByRole('link', { name: 'Open Instagram', exact: true }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/mozza.italia1?srtk=cmt1eWtnZDRzODAw',
+    );
+    await expect(page.locator('.destination-card.instagram')).toContainText(
+      'Get updates, offers & coupons',
+    );
     for (const link of brands[0].links) {
       const openPagesBeforeCopy = context.pages().length;
       const row = page.locator('.destination-card').filter({
